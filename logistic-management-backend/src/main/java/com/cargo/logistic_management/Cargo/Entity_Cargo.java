@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 @jakarta.persistence.Entity
 @Table(name = "shipments")
 @Data
-public class Entity {
+public class Entity_Cargo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -17,11 +17,11 @@ public class Entity {
 
     @ManyToOne
     @JoinColumn(name = "sender_id")
-    private com.cargo.logistic_management.Customer.Entity sender;
+    private com.cargo.logistic_management.Customer.Entity_Cargo sender;
 
     @ManyToOne
     @JoinColumn(name = "receiver_id")
-    private com.cargo.logistic_management.Customer.Entity receiver;
+    private com.cargo.logistic_management.Customer.Entity_Cargo receiver;
 
     private Double weight;
 

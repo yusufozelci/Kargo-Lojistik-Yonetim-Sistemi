@@ -6,7 +6,7 @@ import lombok.Data;
 @jakarta.persistence.Entity
 @Table(name = "customers")
 @Data
-public class Entity {
+public class Entity_Cargo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @jakarta.persistence.Entity
 @Table(name = "users")
 @Data
-public class Entity {
+public class Entity_Cargo {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
