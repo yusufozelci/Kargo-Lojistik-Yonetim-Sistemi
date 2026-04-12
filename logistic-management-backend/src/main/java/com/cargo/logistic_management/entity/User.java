@@ -1,4 +1,4 @@
-package com.cargo.logistic_management.User;
+package com.cargo.logistic_management.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 @jakarta.persistence.Entity
 @Table(name = "users")
 @Data
-public class Entity {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;

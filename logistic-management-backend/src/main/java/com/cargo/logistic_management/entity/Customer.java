@@ -1,4 +1,4 @@
-package com.cargo.logistic_management.Customer;
+package com.cargo.logistic_management.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -6,7 +6,7 @@ import lombok.Data;
 @jakarta.persistence.Entity
 @Table(name = "customers")
 @Data
-public class Entity {
+public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
