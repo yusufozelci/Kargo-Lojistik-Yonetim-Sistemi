@@ -15,13 +15,11 @@ public class CustomerController {
         this.customerService = customerService;
     }
 
-    // Tarayıcıdan veya Postman'den GET isteği gelince burası çalışır
     @GetMapping
     public List<Customer> musterileriListele() {
         return customerService.tumMusterileriGetir();
     }
 
-    // Dışarıdan yeni bir müşteri verisi gelince (POST) burası çalışır
     @PostMapping
     public Customer yeniMusteriEkle(@RequestBody Customer customer) {
         return customerService.musterikaydet(customer);

@@ -1,5 +1,6 @@
 package com.cargo.logistic_management.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+
 public class ShipmentTracking {
 
     @Id
@@ -21,6 +23,7 @@ public class ShipmentTracking {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shipment_id", nullable = false)
+    @JsonIgnore
     private Shipment shipment;
 
     @Enumerated(EnumType.STRING)
