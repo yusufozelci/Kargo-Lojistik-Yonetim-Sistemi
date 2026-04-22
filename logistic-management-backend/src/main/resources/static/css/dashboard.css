@@ -1,0 +1,91 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+    --sidebar-bg: #0F172A;
+    --accent: #2563EB;
+    --bg-body: #F1F5F9;
+    --border: #E2E8F0;
+}
+
+body { font-family: 'Inter', sans-serif; background-color: var(--bg-body); margin: 0; }
+
+.sidebar {
+    width: 260px; height: 100vh; background: var(--sidebar-bg);
+    position: fixed; left: 0; top: 0; padding: 25px; color: white;
+}
+
+.sidebar-brand { font-size: 1.5rem; font-weight: 700; color: white; text-decoration: none; display: block; margin-bottom: 40px; }
+
+.nav-link {
+    color: #94A3B8; padding: 12px 15px; border-radius: 8px;
+    margin-bottom: 8px; display: flex; align-items: center; text-decoration: none;
+}
+
+.nav-link:hover, .nav-link.active { background: #1E293B; color: white; }
+
+.main-content { margin-left: 260px; padding: 40px; }
+
+.stat-card {
+    background: white; border: 1px solid var(--border);
+    border-radius: 12px; padding: 25px; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.table-card { background: white; border-radius: 12px; border: 1px solid var(--border); padding: 30px; margin-top: 30px; }
+
+.badge-status { padding: 6px 12px; border-radius: 6px; font-size: 0.8rem; font-weight: 600; }
+.badge-pending { background: #FEF3C7; color: #92400E; }
+.badge-transit { background: #DBEAFE; color: #1E40AF; }
+.badge-delivered { background: #D1FAE5; color: #065F46; }
+
+
+.table-header-actions {
+    display: flex;
+    gap: 10px;
+}
+
+.btn-export {
+    background-color: #10B981;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.btn-export:hover { background-color: #059669; color: white; }
+
+
+.action-group {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-action {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.btn-action:hover {
+    border-color: var(--text-main);
+    color: var(--text-main);
+}
+
+
+.btn-action.print:hover { border-color: #64748B; color: #475569; background: #F8FAFC; }
+.btn-action.assign:hover { border-color: var(--accent); color: var(--accent); background: #EFF6FF; }
+.btn-action.alert:hover { border-color: #F59E0B; color: #D97706; background: #FEF3C7; }
+.btn-action.view:hover { border-color: var(--success); color: var(--success); background: #ECFDF5; }

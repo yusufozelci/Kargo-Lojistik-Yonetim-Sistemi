@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8"><title>Yönetici Paneli - KargoSync</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="../static/css/dashboard.css" rel="stylesheet">
+</head>
+<body>
+<nav class="sidebar">
+    <a href="#" class="sidebar-brand">KargoSync</a>
+    <a href="#" class="nav-link active"><i class="fas fa-chart-pie me-2"></i>Genel Bakış</a>
+    <a href="#" class="nav-link"><i class="fas fa-boxes me-2"></i>Kargo Yönetimi</a>
+    <a href="#" class="nav-link"><i class="fas fa-users me-2"></i>Müşteriler</a>
+    <div style="position:absolute; bottom:30px;"><a href="login.html" class="nav-link"><i class="fas fa-sign-out-alt me-2"></i>Çıkış</a></div>
+</nav>
+
+<main class="main-content">
+    <h2 class="fw-bold mb-4">Sistem Özeti</h2>
+    <div class="row g-4">
+        <div class="col-md-4"><div class="stat-card"><small class="text-muted fw-bold">TOPLAM SEVKİYAT</small><h3 class="fw-bold m-0">1,284</h3></div></div>
+        <div class="col-md-4"><div class="stat-card"><small class="text-muted fw-bold">AKTİF ROTALAR</small><h3 class="fw-bold m-0" style="color:var(--accent);">342</h3></div></div>
+        <div class="col-md-4"><div class="stat-card"><small class="text-muted fw-bold">TESLİMAT ORANI</small><h3 class="fw-bold m-0" style="color:#10B981;">%94.2</h3></div></div>
+    </div>
+
+    <div class="table-card">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="fw-bold m-0">Canlı Operasyonlar</h5>
+
+            <div class="table-header-actions">
+                <button class="btn btn-export"><i class="fas fa-file-excel"></i> Rapor Al (CSV)</button>
+                <button class="btn btn-primary btn-sm px-3 fw-bold" style="border-radius: 8px;"><i class="fas fa-plus me-1"></i> Yeni Kargo</button>
+            </div>
+        </div>
+
+        <div class="table-responsive">
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Takip No</th>
+                    <th>Gönderici / Alıcı</th>
+                    <th>Varış Noktası</th>
+                    <th>Durum</th>
+                    <th>Operasyon İşlemleri</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td><strong>TR-110293</strong></td>
+                    <td>Mehmet K. <i class="fas fa-arrow-right mx-1 text-muted" style="font-size:0.7rem;"></i> Fatma Ş.</td>
+                    <td>Ankara</td>
+                    <td><span class="badge-status badge-pending">Hazırlanıyor</span></td>
+                    <td>
+                        <div class="action-group">
+                            <button class="btn-action print" title="İrsaliye / Barkod Yazdır"><i class="fas fa-print"></i></button>
+                            <button class="btn-action assign" title="Araç/Kurye Ata"><i class="fas fa-truck"></i></button>
+                            <button class="btn-action view" title="Kargo Detayları"><i class="fas fa-eye"></i></button>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td><strong>TR-849302</strong></td>
+                    <td>Ahmet Y. <i class="fas fa-arrow-right mx-1 text-muted" style="font-size:0.7rem;"></i> Ayşe D.</td>
+                    <td>İzmir</td>
+                    <td><span class="badge-status badge-transit">Transferde</span></td>
+                    <td>
+                        <div class="action-group">
+                            <button class="btn-action print" title="İrsaliye / Barkod Yazdır"><i class="fas fa-print"></i></button>
+                            <button class="btn-action alert" title="Manuel Durum Müdahalesi (Hasar/Gecikme)"><i class="fas fa-exclamation-triangle"></i></button>
+                            <button class="btn-action view" title="Kargo Detayları"><i class="fas fa-eye"></i></button>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td><strong>TR-559281</strong></td>
+                    <td>Caner Y. <i class="fas fa-arrow-right mx-1 text-muted" style="font-size:0.7rem;"></i> Elif Ç.</td>
+                    <td>Bursa</td>
+                    <td><span class="badge-status badge-delivered">Teslim Edildi</span></td>
+                    <td>
+                        <div class="action-group">
+                            <button class="btn-action print" title="Fatura Yazdır"><i class="fas fa-file-invoice"></i></button>
+                            <button class="btn-action view" title="Teslimat Tutanak Detayı"><i class="fas fa-eye"></i></button>
+                        </div>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+</body>
+</html>
