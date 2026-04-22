@@ -1,16 +1,20 @@
 package com.cargo.logistic_management.entity;
 
 import jakarta.persistence.*;
-import lombok.Data;
-import java.time.LocalDateTime;
+import lombok.*;
+import org.hibernate.annotations.SQLDelete;
 
-@jakarta.persistence.Entity
+
+@Entity
 @Table(name = "users")
-@Data
-public class User {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer id;
+@SQLDelete(sql = "UPDATE users SET is_deleted = true WHERE id = ?")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true, exclude = "passwordHash")
+public class User extends BaseEntity {
 
     @Column(nullable = false, unique = true)
     private String email;
@@ -22,7 +26,4 @@ public class User {
     private String fullName;
 
     private Boolean status = true;
-
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
 }

@@ -1,23 +1,17 @@
 package com.cargo.logistic_management.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.SQLDelete;
 
 @Entity
 @Table(name = "shipments")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class Shipment {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+@SQLDelete(sql = "UPDATE shipments SET is_deleted = true WHERE id = ?")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true, exclude = {"sender", "receiver", "originAddress", "destinationAddress", "courier"})
+public class Shipment extends BaseEntity {
     @Column(name = "tracking_code", unique = true, nullable = false, length = 20)
     private String trackingCode;
 
@@ -44,13 +38,7 @@ public class Shipment {
     @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private ShipmentStatus status;
-
-    @Column(name = "weight")
     private Double weight;
-
-    @Column(name = "distance")
     private Double distance;
-
-    @Column(name = "total_price")
     private Double totalPrice;
 }

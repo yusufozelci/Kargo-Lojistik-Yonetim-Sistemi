@@ -7,4 +7,15 @@
 
     <include file="/db/changelog/changes/001-create-initial-tables.sql" relativeToChangelogFile="false"/>
 
+    <changeSet id="20260422-base-entity-final-fix" author="yusuf">
+        <validCheckSum>any</validCheckSum> <preConditions onFail="MARK_RAN">
+        <not><columnExists tableName="shipments" columnName="is_deleted"/></not>
+    </preConditions>
+
+        <addColumn tableName="shipments">
+            <column name="updated_at" type="timestamp"/>
+            <column name="is_deleted" type="boolean" defaultValueBoolean="false"/>
+        </addColumn>
+    </changeSet>
+
 </databaseChangeLog>

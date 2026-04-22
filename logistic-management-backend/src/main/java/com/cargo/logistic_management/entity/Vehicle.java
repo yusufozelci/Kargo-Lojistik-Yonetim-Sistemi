@@ -1,23 +1,16 @@
 package com.cargo.logistic_management.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.SQLDelete;
 
 @Entity
 @Table(name = "vehicles")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-public class Vehicle {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+@SQLDelete(sql = "UPDATE vehicles SET is_deleted = true WHERE id = ?")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+public class Vehicle extends BaseEntity {
     @Column(name = "plate_number", unique = true)
     private String plateNumber;
 

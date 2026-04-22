@@ -2,25 +2,18 @@ package com.cargo.logistic_management.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
-import java.time.LocalDateTime;
+import lombok.*;
+import org.hibernate.annotations.SQLDelete;
+
 
 @Entity
 @Table(name = "shipment_tracking")
-@Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
-
-public class ShipmentTracking {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+@SQLDelete(sql = "UPDATE shipment_tracking SET is_deleted = true WHERE id = ?")
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
+@EqualsAndHashCode(callSuper = true)
+@ToString(callSuper = true, exclude = "shipment")
+public class ShipmentTracking extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "shipment_id", nullable = false)
     @JsonIgnore
@@ -37,6 +30,4 @@ public class ShipmentTracking {
     @Column(name = "description", columnDefinition = "TEXT")
     private String description;
 
-    @Column(name = "created_at")
-    private LocalDateTime createdAt = LocalDateTime.now();
 }
