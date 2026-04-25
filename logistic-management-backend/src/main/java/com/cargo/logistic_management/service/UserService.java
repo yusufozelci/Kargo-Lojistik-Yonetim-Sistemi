@@ -46,7 +46,7 @@ public class UserService {
         user.setEmail(registerDto.getEmail());
         user.setPasswordHash(registerDto.getPassword());
 
-        roleRepository.findById(3L).ifPresent(role -> user.setRole(role));
+        roleRepository.findById(3L).ifPresent(user::setRole);
 
         User savedUser = userRepository.save(user);
         return convertToDto(savedUser);
