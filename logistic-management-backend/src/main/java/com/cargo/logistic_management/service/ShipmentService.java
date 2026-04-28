@@ -4,7 +4,6 @@ import com.cargo.logistic_management.datatransferobject.ShipmentRequestDto;
 import com.cargo.logistic_management.datatransferobject.ShipmentResponseDto;
 import com.cargo.logistic_management.entity.Shipment;
 import com.cargo.logistic_management.entity.ShipmentStatus;
-import com.cargo.logistic_management.entity.ShipmentTracking;
 import com.cargo.logistic_management.exception.ResourceNotFoundException;
 import com.cargo.logistic_management.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -20,7 +19,7 @@ import java.util.stream.Collectors;
 public class ShipmentService {
 
     private final ShipmentRepository shipmentRepository;
-    private final ShipmentTrackingRepository shipmentTrackingRepository;
+    private final ShipmentTrackingService trackingService;
     private final CustomerRepository customerRepository;
     private final AddressRepository addressRepository;
     private final UserRepository userRepository;
@@ -36,10 +35,10 @@ public class ShipmentService {
         Shipment shipment = new Shipment();
 
         shipment.setSender(customerRepository.findById(dto.getSenderId())
-                .orElseThrow(() -> new ResourceNotFoundException("Gönderici müşteri bulunamadı! ID: " + dto.getSenderId())));
+                .orElseThrow(() -> new ResourceNotFoundException("Gönderici bulunamadı! ID: " + dto.getSenderId())));
 
         shipment.setReceiver(customerRepository.findById(dto.getReceiverId())
-                .orElseThrow(() -> new ResourceNotFoundException("Alıcı müşteri bulunamadı! ID: " + dto.getReceiverId())));
+                .orElseThrow(() -> new ResourceNotFoundException("Alıcı bulunamadı! ID: " + dto.getReceiverId())));
 
         shipment.setOriginAddress(addressRepository.findById(dto.getOriginAddressId())
                 .orElseThrow(() -> new ResourceNotFoundException("Çıkış adresi bulunamadı!")));
@@ -64,7 +63,7 @@ public class ShipmentService {
 
         Shipment kaydedilenKargo = shipmentRepository.save(shipment);
 
-        createTrackingLog(kaydedilenKargo, ShipmentStatus.PENDING, "Kargo sisteme başarıyla kaydedildi.");
+        trackingService.createLog(kaydedilenKargo, ShipmentStatus.PENDING, "Kargo sisteme başarıyla kaydedildi.");
 
         return convertToResponseDto(kaydedilenKargo);
     }
@@ -75,26 +74,15 @@ public class ShipmentService {
                 .orElseThrow(() -> new ResourceNotFoundException("Kargo bulunamadı! ID: " + id));
 
         if (kargo.getStatus() == ShipmentStatus.DELIVERED) {
-            throw new RuntimeException("Teslim edilmiş kargo üzerinde durum değişikliği yapılamaz!");
+            throw new RuntimeException("Teslim edilmiş kargo üzerinde işlem yapılamaz!");
         }
 
         kargo.setStatus(yeniDurum);
         Shipment guncellenenKargo = shipmentRepository.save(kargo);
-
-        createTrackingLog(guncellenenKargo, yeniDurum, "Kargo durumu '" + yeniDurum + "' olarak güncellendi.");
+        trackingService.createLog(guncellenenKargo, yeniDurum, "Kargo durumu '" + yeniDurum + "' olarak güncellendi.");
 
         return convertToResponseDto(guncellenenKargo);
     }
-
-
-    private void createTrackingLog(Shipment shipment, ShipmentStatus status, String description) {
-        ShipmentTracking trackingLog = new ShipmentTracking();
-        trackingLog.setShipment(shipment);
-        trackingLog.setStatus(status);
-        trackingLog.setDescription(description);
-        shipmentTrackingRepository.save(trackingLog);
-    }
-
     public ShipmentResponseDto kargoSorgula(String trackingCode) {
         Shipment shipment = shipmentRepository.findByTrackingCode(trackingCode)
                 .orElseThrow(() -> new ResourceNotFoundException("Bu takip koduyla bir kargo bulunamadı: " + trackingCode));
@@ -105,10 +93,26 @@ public class ShipmentService {
         return new ShipmentResponseDto(
                 shipment.getId(),
                 shipment.getTrackingCode(),
-                shipment.getSender().getFullName(), // getFirstName yerine getFullName kullanıldı
-                shipment.getReceiver().getFullName(), // getFirstName yerine getFullName kullanıldı
+                shipment.getSender() != null ? shipment.getSender().getFullName() : "Bilinmeyen Gönderici",
+                shipment.getReceiver() != null ? shipment.getReceiver().getFullName() : "Bilinmeyen Alıcı",
                 shipment.getStatus(),
                 shipment.getTotalPrice()
         );
+    }
+
+    @Transactional
+    public ShipmentResponseDto kuryeAta(Long shipmentId, Long courierId) {
+        Shipment kargo = shipmentRepository.findById(shipmentId)
+                .orElseThrow(() -> new ResourceNotFoundException("Kargo bulunamadı! ID: " + shipmentId));
+        var kurye = userRepository.findById(courierId)
+                .orElseThrow(() -> new ResourceNotFoundException("Kurye bulunamadı! ID: " + courierId));
+
+        kargo.setCourier(kurye);
+        Shipment guncellenenKargo = shipmentRepository.save(kargo);
+
+        trackingService.createLog(guncellenenKargo, kargo.getStatus(),
+                "Kargo, kurye " + kurye.getFullName() + " üzerine zimmetlendi ve dağıtıma hazırlanıyor.");
+
+        return convertToResponseDto(guncellenenKargo);
     }
 }

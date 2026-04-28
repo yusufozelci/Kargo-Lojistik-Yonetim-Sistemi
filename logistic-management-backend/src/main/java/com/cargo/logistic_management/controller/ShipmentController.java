@@ -41,4 +41,9 @@ public class ShipmentController {
     public ResponseEntity<ShipmentResponseDto> kargoSorgula(@PathVariable String trackingCode) {
         return ResponseEntity.ok(shipmentService.kargoSorgula(trackingCode));
     }
+
+    @PutMapping("/{id}/kurye-ata/{courierId}")
+    public ResponseEntity<ShipmentResponseDto> kuryeAta(@PathVariable Long id, @PathVariable Long courierId) {
+        return ResponseEntity.ok(shipmentService.kuryeAta(id, courierId));
+    }
 }

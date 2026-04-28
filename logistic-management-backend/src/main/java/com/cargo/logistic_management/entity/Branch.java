@@ -20,8 +20,10 @@ public class Branch extends BaseEntity {
     @Column(nullable = false)
     private String name;
 
-    private String city;
-
     @Column(name = "is_transfer_center")
     private Boolean isTransferCenter = false;
+
+    @OneToOne
+    @JoinColumn(name = "address_id")
+    private Address address;
 }
