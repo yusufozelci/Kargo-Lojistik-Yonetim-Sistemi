@@ -7,6 +7,7 @@ import com.cargo.logistic_management.entity.User;
 import com.cargo.logistic_management.repository.UserRepository;
 import com.cargo.logistic_management.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
+    private final PasswordEncoder passwordEncoder;
 
     private UserResponseDto convertToDto(User user) {
         return new UserResponseDto(
@@ -34,6 +36,7 @@ public class UserService {
                 .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
+
     public UserResponseDto getUserById(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id + " ID'li kullanıcı bulunamadı!"));
@@ -44,20 +47,20 @@ public class UserService {
         User user = new User();
         user.setFullName(registerDto.getFullName());
         user.setEmail(registerDto.getEmail());
-        user.setPasswordHash(registerDto.getPassword());
-
+        user.setPhone(registerDto.getPhone());
+        user.setPasswordHash(passwordEncoder.encode(registerDto.getPassword()));
         roleRepository.findById(3L).ifPresent(user::setRole);
 
         User savedUser = userRepository.save(user);
         return convertToDto(savedUser);
     }
 
-
     public void deleteUser(Long id) {
         User user = userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id + " ID'li kullanıcı bulunamadı!"));
         userRepository.delete(user);
     }
+
     public void hardDeleteUser(Long id) {
         userRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(id + " ID'li kullanıcı bulunamadı!"));
