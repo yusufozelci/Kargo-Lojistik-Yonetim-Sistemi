@@ -38,7 +38,12 @@ public class SecurityConfig {
                                 "/api/users/register",
                                 "/api/users/login",
                                 "/v3/api-docs/**",
-                                "/webjars/**"
+                                "/webjars/**",
+                                "/login",
+                                "/register",
+                                "/tracking",
+                                "/css/**",
+                                "/js/**"
                         ).permitAll()
                         .anyRequest().authenticated()
                 )

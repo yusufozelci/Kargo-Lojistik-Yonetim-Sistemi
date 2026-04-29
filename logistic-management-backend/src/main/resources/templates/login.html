@@ -11,8 +11,9 @@
         <h3>KargoSync</h3>
         <p class="text-muted small">Lojistik Yönetim Paneline Erişin</p>
     </div>
-    <form th:action="@{/login}" method="post">
-        <div class="mb-3">
+    <form id="loginForm">
+
+    <div class="mb-3">
             <label class="form-label">E-posta</label>
             <input type="email" class="form-control" name="username" placeholder="ad@kurum.com" required>
         </div>
