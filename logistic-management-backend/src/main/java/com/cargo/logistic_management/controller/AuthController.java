@@ -1,24 +1,29 @@
 package com.cargo.logistic_management.controller;
 
-import com.cargo.logistic_management.datatransferobject.AuthenticationRequest;
-import com.cargo.logistic_management.datatransferobject.AuthenticationResponse;
-import com.cargo.logistic_management.service.AuthenticationService;
+import com.cargo.logistic_management.entity.User;
+import com.cargo.logistic_management.datatransferobject.UserRegisterDto;
+import com.cargo.logistic_management.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
 
-@RestController
-@RequestMapping("/api/users")
+@Controller
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthenticationService authenticationService;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    
+    @PostMapping("/register")
+    public String registerUser(@ModelAttribute("UserRegisterDto") UserRegisterDto dto) {
+        User user = new User();
+        user.setFullName(dto.getFullName());
+        user.setEmail(dto.getEmail());
+        user.setPassword(passwordEncoder.encode(dto.getPassword()));
 
-    @PostMapping("/login")
-    public ResponseEntity<AuthenticationResponse> login(@RequestBody AuthenticationRequest request) {
-        return ResponseEntity.ok(authenticationService.authenticate(request));
+        userRepository.save(user);
+        return "redirect:/login";
     }
 }

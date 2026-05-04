@@ -32,4 +32,8 @@ public class User extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     private Role role;
+
+    public void setPassword(String encodedPassword) {
+        this.passwordHash = encodedPassword;
+    }
 }

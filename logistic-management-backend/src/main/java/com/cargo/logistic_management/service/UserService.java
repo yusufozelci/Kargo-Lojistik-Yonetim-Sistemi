@@ -67,4 +67,7 @@ public class UserService {
 
         userRepository.hardDeleteById(id);
     }
+
+    public void register(UserRegisterDto userRegisterDto) {
+    }
 }

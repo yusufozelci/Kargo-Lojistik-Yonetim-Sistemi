@@ -1,37 +1,46 @@
 <!DOCTYPE html>
 <html lang="tr" xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8"><title>Kargo Takip - KargoSync</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kargo Takip - KargoSync</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../static/css/tracking.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
 </head>
-<body>
-<header class="tracking-header">
-    <h1 class="fw-bold">Kargonuzu Takip Edin</h1>
-    <p class="opacity-75">Takip numaranızı girerek güncel durumu öğrenin.</p>
-</header>
+<body style="background-color: #f1f5f9;">
 
-<div class="container">
-    <div class="search-box">
-        <input type="text" placeholder="TR-XXXXXX">
-        <button class="btn-track">SORGULA</button>
-    </div>
+<div class="bg-white shadow-sm px-4 py-3 d-flex justify-content-between align-items-center">
+    <div class="fs-4 fw-bold text-dark"><i class="fa-solid fa-truck-fast text-primary me-2"></i>Kargo<span class="text-primary">Sync</span></div>
+    <a th:href="@{/login}" class="btn btn-outline-primary fw-semibold"><i class="fa-solid fa-user me-2"></i>Sisteme Giriş</a>
+</div>
 
-    <div class="card border-0 shadow-sm p-5 rounded-4 mb-5">
-        <h4 class="fw-bold mb-4">Gönderi Detayları</h4>
-        <div class="timeline">
-            <div class="timeline-item done">
-                <div class="timeline-dot"></div>
-                <h6 class="fw-bold mb-1">Kargo Kabul Edildi</h6>
-                <p class="text-muted small">Kayseri Şube - 14.04.2026 09:00</p>
-            </div>
-            <div class="timeline-item">
-                <div class="timeline-dot"></div>
-                <h6 class="fw-bold mb-1">Yolda</h6>
-                <p class="text-muted small">Transfer Merkezi - Bekleniyor</p>
+<div class="tracking-hero">
+    <h1 class="fw-bold mb-3">Kargonuz Nerede?</h1>
+    <p class="text-light opacity-75 mb-0">Gönderi takip numaranızı girerek anlık durum bilgisine ulaşın.</p>
+</div>
+
+<div class="tracking-search-box text-center">
+    <form th:action="@{/tracking}" method="GET" class="d-flex gap-2">
+        <input type="text" name="trackingNumber" class="form-control form-control-lg bg-light"
+               placeholder="Takip Numarası (Örn: TRK-123456)" required
+               th:value="${param.trackingNumber}">
+        <button type="submit" class="btn btn-primary btn-lg px-4 fw-bold"><i class="fa-solid fa-magnifying-glass"></i> Sorgula</button>
+    </form>
+</div>
+
+<div class="container pb-5" id="tracking-result-container" style="display: none;">
+    <div class="card border-0 shadow-sm rounded-4 mx-auto" style="max-width: 700px;">
+        <div class="card-body p-4">
+            <h5 class="fw-bold border-bottom pb-3 mb-4">Gönderi Durumu: <span class="text-primary" id="display-tracking-code"></span></h5>
+
+            <div class="timeline" id="tracking-timeline">
+
             </div>
         </div>
     </div>
 </div>
+
+<script th:src="@{/js/tracking.js}"></script>
 </body>
 </html>
