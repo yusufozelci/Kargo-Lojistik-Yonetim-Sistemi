@@ -2,42 +2,89 @@
 <html lang="tr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <title>NovaKargo | Kayıt Ol</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kayıt Ol - KargoSync Kurumsal</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link th:href="@{/css/auth.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/register.css}">
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <script th:src="@{/js/theme.js}" defer></script>
 </head>
 <body>
-<div class="auth-wrapper">
-    <div class="auth-card">
-        <div class="brand-logo">
-            <i class="fa-solid fa-truck-fast text-primary me-2"></i>Kargo<span>Sync</span>
-        </div>
-        <div class="auth-subtitle">Kurumsal lojistik ağına katılın</div>
 
-        <form th:action="@{/register}" th:object="${UserRegisterDto}" method="post">
-            <div class="mb-3">
-                <label class="form-label">Ad Soyad</label>
-                <input type="text" class="form-control" th:field="*{fullName}" placeholder="Örn: Ahmet Yılmaz" required>
-            </div>
-            <div class="mb-3">
-                <label class="form-label">E-posta Adresi</label>
-                <input type="email" class="form-control" th:field="*{email}" placeholder="sirket@ornek.com" required>
-            </div>
-            <div class="mb-4">
-                <label class="form-label">Şifre</label>
-                <input type="password" class="form-control" th:field="*{password}" placeholder="••••••••" required>
-            </div>
-            <button type="submit" class="btn-corp">
-                <i class="fa-solid fa-user-plus me-2"></i>Kayıt İşlemini Tamamla
-            </button>
-        </form>
+<header class="site-header">
+    <div class="container header-inner">
+        <a th:href="@{/}" class="brand">
+            <div class="brand-icon"><span class="box-top"></span><span class="box-side"></span></div>
+            <strong>Nova<span>Kargo</span></strong>
+        </a>
 
-        <div class="auth-footer text-center mt-3" style="font-size: 0.9rem;">
-            Zaten bir hesabınız var mı? <a th:href="@{/login}">Giriş Yapın</a>
-        </div>
+        <nav class="main-nav">
+            <a th:href="@{/}">Ana Sayfa</a>
+            <a th:href="@{/#tracking}">Kargo Takip</a>
+            <a th:href="@{/#pricing}">Ücret Hesaplama</a>
+            <a th:href="@{/login}">Giriş Yap</a>
+        </nav>
     </div>
-</div>
+</header>
+
+<main class="auth-page">
+    <section class="auth-visual">
+        <div class="visual-card">
+            <span class="eyebrow">Yeni Kullanıcı Kaydı</span>
+            <h1>NovaKargo hesabınızı oluşturun.</h1>
+            <p>
+                Kayıt olan kullanıcılar sisteme müşteri hesabı olarak dahil olur.
+                Giriş yaptıktan sonra takip, ücret hesaplama ve şube ekranlarına ulaşabilir.
+            </p>
+
+            <div class="info-strip">
+                <div><strong>Kargo Takip</strong><span>Takip koduyla anlık sorgulama</span></div>
+                <div><strong>Ücret Hesaplama</strong><span>Ağırlık ve mesafeye göre tahmin</span></div>
+                <div><strong>Şube Bilgileri</strong><span>Kayıtlı şubeleri görüntüleme</span></div>
+            </div>
+        </div>
+    </section>
+
+    <section class="auth-panel">
+        <form class="auth-card" th:action="@{/register}" th:object="${UserRegisterDto}" method="post">
+            <div class="form-head">
+                <span>Kayıt Formu</span>
+                <h2>Kayıt Ol</h2>
+                <p>Hesabınızı oluşturmak için bilgilerinizi girin.</p>
+            </div>
+
+            <div class="input-group">
+                <label for="fullName">Ad Soyad</label>
+                <input type="text" id="fullName" th:field="*{fullName}" placeholder="Örn: Emirhan Uraş" required>
+                <small class="field-error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></small>
+            </div>
+
+            <div class="input-group">
+                <label for="email">E-posta</label>
+                <input type="email" id="email" th:field="*{email}" placeholder="ornek@mail.com" required>
+                <small class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+            </div>
+
+            <div class="input-group">
+                <label for="phone">Telefon</label>
+                <input type="tel" id="phone" th:field="*{phone}" placeholder="5551234567" required>
+                <small class="field-error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></small>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Şifre</label>
+                <input type="password" id="password" th:field="*{password}" placeholder="En az 6 karakter" required>
+                <small class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
+            </div>
+
+            <button type="submit" class="primary-button">Hesap Oluştur</button>
+
+            <p class="helper-text">
+                Zaten hesabınız var mı?
+                <a th:href="@{/login}">Giriş yapın</a>
+            </p>
+        </form>
+    </section>
+</main>
+
 </body>
 </html>

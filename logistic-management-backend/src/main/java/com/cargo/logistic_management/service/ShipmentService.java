@@ -23,6 +23,7 @@ public class ShipmentService {
     private final CustomerRepository customerRepository;
     private final AddressRepository addressRepository;
     private final UserRepository userRepository;
+    private final PricingService pricingService;
 
     public List<ShipmentResponseDto> tumKargolariGetir() {
         return shipmentRepository.findAll().stream()
@@ -56,9 +57,8 @@ public class ShipmentService {
         shipment.setTrackingCode("TRK-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
         shipment.setStatus(ShipmentStatus.PENDING);
 
-        double birimKatsayi = 15.0;
         if (dto.getWeight() != null && dto.getDistance() != null) {
-            shipment.setTotalPrice(dto.getWeight() * dto.getDistance() * birimKatsayi);
+            shipment.setTotalPrice(pricingService.calculatePrice(dto.getWeight(), dto.getDistance()));
         }
 
         Shipment kaydedilenKargo = shipmentRepository.save(shipment);

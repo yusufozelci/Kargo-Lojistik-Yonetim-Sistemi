@@ -22,10 +22,16 @@ public class UserService {
     private final PasswordEncoder passwordEncoder;
 
     private UserResponseDto convertToDto(User user) {
+        String roleName = user.getRole() != null
+                ? user.getRole().getRoleName()
+                : "-";
+
         return new UserResponseDto(
                 user.getId(),
                 user.getFullName(),
                 user.getEmail(),
+                user.getPhone(),
+                roleName,
                 user.getStatus()
         );
     }

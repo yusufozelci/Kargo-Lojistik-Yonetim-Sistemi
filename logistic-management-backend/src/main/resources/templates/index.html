@@ -1,0 +1,436 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>NovaKargo | Kargo Takip</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link rel="stylesheet" th:href="@{/css/index.css}">
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <script th:src="@{/js/theme.js}" defer></script>
+</head>
+<body>
+
+<header class="site-header">
+    <div class="container header-inner">
+
+        <a th:href="@{/}" class="brand">
+            <div class="brand-icon">
+                <span class="box-top"></span>
+                <span class="box-side"></span>
+            </div>
+
+            <div class="brand-name">
+                <strong>Nova<span>Kargo</span></strong>
+            </div>
+        </a>
+
+        <nav class="main-nav">
+            <a href="#" class="active">Ana Sayfa</a>
+            <a href="#services">Hizmetler</a>
+            <a href="#tracking">Kargo Takip</a>
+            <a href="#pricing">Ücret Hesaplama</a>
+            <a href="#about">Hakkımızda</a>
+            <a href="#contact">İletişim</a>
+        </nav>
+
+        <a th:href="@{/login}" class="create-btn">
+            <span class="create-icon">↗</span>
+            Giriş Yap
+        </a>
+
+    </div>
+</header>
+
+<main>
+
+    <section class="hero-section" id="tracking">
+        <div class="container hero-inner">
+
+            <div class="hero-content">
+                <h1>Gönderilerinizi<br>Güvenle Takip Edin</h1>
+
+                <p>
+                    Türkiye’nin dört bir yanına hızlı, güvenilir ve ekonomik
+                    kargo çözümleri sunuyoruz.
+                </p>
+
+                <form th:action="@{/tracking}" method="get" class="tracking-form">
+                    <div class="tracking-input">
+                        <span class="search-icon"></span>
+                        <input
+                                type="text"
+                                name="trackingNumber"
+                                th:value="${trackingNumber}"
+                                placeholder="Takip numaranızı girin"
+                                required>
+                    </div>
+
+                    <button type="submit">Sorgula</button>
+                </form>
+
+                <div th:if="${error}" class="alert-box">
+                    <span th:text="${error}">Bu takip numarasına ait kargo bulunamadı.</span>
+                </div>
+
+                <div th:if="${shipment}" class="tracking-result">
+                    <div class="result-head">
+                        <span>Gönderi Bilgileri</span>
+                        <strong th:text="${shipment.trackingCode}">TRK-XXXX</strong>
+                    </div>
+
+                    <div class="result-grid">
+                        <div>
+                            <small>Gönderici</small>
+                            <strong th:text="${shipment.sender != null ? shipment.sender.fullName : 'Bilinmiyor'}">-</strong>
+                        </div>
+
+                        <div>
+                            <small>Alıcı</small>
+                            <strong th:text="${shipment.receiver != null ? shipment.receiver.fullName : 'Bilinmiyor'}">-</strong>
+                        </div>
+
+                        <div>
+                            <small>Durum</small>
+                            <strong th:switch="${shipment.status != null ? shipment.status.name() : 'UNKNOWN'}">
+                                <em th:case="'PENDING'" class="status status-pending">Beklemede</em>
+                                <em th:case="'IN_TRANSIT'" class="status status-transit">Yolda</em>
+                                <em th:case="'DELIVERED'" class="status status-delivered">Teslim Edildi</em>
+                                <em th:case="'CANCELLED'" class="status status-cancelled">İptal Edildi</em>
+                                <em th:case="*" class="status">Bilinmiyor</em>
+                            </strong>
+                        </div>
+
+                        <div>
+                            <small>Ücret</small>
+                            <strong th:text="${shipment.totalPrice != null ? #numbers.formatDecimal(shipment.totalPrice, 1, 2) + ' TL' : '-'}">-</strong>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="hero-visual">
+                <img th:src="@{/images/hero-truck.png}" src="/images/hero-truck.png" alt="NovaKargo kamyonu">
+            </div>
+
+        </div>
+    </section>
+
+    <section class="service-section" id="services">
+        <div class="container service-grid">
+
+            <article class="service-card">
+                <div class="service-icon">
+                    <svg viewBox="0 0 64 64" aria-hidden="true">
+                        <path d="M12 18h28v26H12z"></path>
+                        <path d="M40 27h9l7 8v9H40z"></path>
+                        <circle cx="23" cy="47" r="5"></circle>
+                        <circle cx="49" cy="47" r="5"></circle>
+                    </svg>
+                </div>
+
+                <div>
+                    <h3>Yurtiçi Teslimat</h3>
+                    <p>Türkiye’nin 81 iline hızlı ve güvenilir teslimat hizmeti sağlıyoruz.</p>
+                </div>
+            </article>
+
+            <article class="service-card">
+                <div class="service-icon">
+                    <svg viewBox="0 0 64 64" aria-hidden="true">
+                        <path d="M18 18h28v28H18z"></path>
+                        <path d="M18 28l14 8 14-8"></path>
+                        <path d="M45 42l8 8"></path>
+                        <circle cx="42" cy="39" r="9"></circle>
+                    </svg>
+                </div>
+
+                <div>
+                    <h3>Hızlı Kargo Takibi</h3>
+                    <p>Gönderilerinizi anlık olarak takip edin, her aşamada bilgi sahibi olun.</p>
+                </div>
+            </article>
+
+            <article class="service-card">
+                <div class="service-icon">
+                    <svg viewBox="0 0 64 64" aria-hidden="true">
+                        <path d="M16 50V22h14v28"></path>
+                        <path d="M34 50V14h14v36"></path>
+                        <path d="M10 50h46"></path>
+                        <path d="M22 30h2M22 38h2M40 22h2M40 30h2M40 38h2"></path>
+                    </svg>
+                </div>
+
+                <div>
+                    <h3>Kurumsal Gönderi Çözümleri</h3>
+                    <p>İşletmenize özel kargo çözümleri ve toplu gönderi avantajları.</p>
+                </div>
+            </article>
+
+        </div>
+    </section>
+
+    <section class="pricing-section" id="pricing">
+        <div class="container pricing-card">
+
+            <div class="pricing-info">
+                <span>Kargo Ücreti</span>
+                <h2>Tahmini gönderi ücretini hesaplayın</h2>
+                <p>
+                    Gönderinizin ağırlığını ve taşıma mesafesini girerek tahmini kargo ücretini öğrenebilirsiniz.
+                </p>
+            </div>
+
+            <form th:action="@{/calculate-price}" method="get" class="pricing-form">
+                <div class="price-field">
+                    <label for="weight">Ağırlık</label>
+                    <div class="price-input">
+                        <input
+                                type="number"
+                                id="weight"
+                                name="weight"
+                                min="0.1"
+                                step="0.1"
+                                th:value="${weight}"
+                                placeholder="Örn: 2.5"
+                                required>
+                        <span>kg</span>
+                    </div>
+                </div>
+
+                <div class="price-field">
+                    <label for="distance">Mesafe</label>
+                    <div class="price-input">
+                        <input
+                                type="number"
+                                id="distance"
+                                name="distance"
+                                min="1"
+                                step="0.1"
+                                th:value="${distance}"
+                                placeholder="Örn: 350"
+                                required>
+                        <span>km</span>
+                    </div>
+                </div>
+
+                <button type="submit">Ücreti Hesapla</button>
+            </form>
+
+            <div th:if="${priceError}" class="alert-box pricing-alert">
+                <span th:text="${priceError}">Ücret hesaplanırken hata oluştu.</span>
+            </div>
+
+            <div th:if="${calculatedPrice}" class="pricing-result">
+                <div>
+                    <span>Ağırlık</span>
+                    <strong th:text="${weight + ' kg'}">2.5 kg</strong>
+                </div>
+
+                <div>
+                    <span>Mesafe</span>
+                    <strong th:text="${distance + ' km'}">350 km</strong>
+                </div>
+
+                <div class="pricing-total">
+                    <span>Tahmini Ücret</span>
+                    <strong th:text="${#numbers.formatDecimal(calculatedPrice, 1, 2) + ' TL'}">150 TL</strong>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="stats-section">
+        <div class="container stats-grid">
+
+            <div class="stat-item">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 64 64" aria-hidden="true">
+                        <path d="M32 58s18-19 18-34a18 18 0 0 0-36 0c0 15 18 34 18 34z"></path>
+                        <circle cx="32" cy="24" r="6"></circle>
+                    </svg>
+                </div>
+
+                <div>
+                    <strong>81</strong>
+                    <span>İl’e Teslimat</span>
+                    <p>Türkiye’nin 81 iline hizmet.</p>
+                </div>
+            </div>
+
+            <div class="stat-item">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 64 64" aria-hidden="true">
+                        <path d="M12 21h28v24H12z"></path>
+                        <path d="M40 30h8l6 7v8H40z"></path>
+                        <circle cx="23" cy="48" r="5"></circle>
+                        <circle cx="49" cy="48" r="5"></circle>
+                    </svg>
+                </div>
+
+                <div>
+                    <strong>500+</strong>
+                    <span>Araç</span>
+                    <p>Güçlü filomuzla kesintisiz hizmet.</p>
+                </div>
+            </div>
+
+            <div class="stat-item">
+                <div class="stat-icon">
+                    <svg viewBox="0 0 64 64" aria-hidden="true">
+                        <path d="M18 52V20h12v32"></path>
+                        <path d="M34 52V12h12v40"></path>
+                        <path d="M10 52h44"></path>
+                        <path d="M23 28h2M23 36h2M39 20h2M39 28h2M39 36h2"></path>
+                    </svg>
+                </div>
+
+                <div>
+                    <strong>200</strong>
+                    <span>Şube</span>
+                    <p>Yaygın şube ağımızla her yerdeyiz.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="steps-section" id="about">
+        <div class="container">
+            <h2>Nasıl Çalışır?</h2>
+
+            <div class="steps-grid">
+
+                <div class="step-item">
+                    <div class="step-icon">
+                        <svg viewBox="0 0 64 64" aria-hidden="true">
+                            <path d="M18 10h22l8 8v36H18z"></path>
+                            <path d="M40 10v10h8"></path>
+                            <path d="M25 35h14M32 28v14"></path>
+                        </svg>
+                    </div>
+
+                    <div class="step-info">
+                        <span>1</span>
+                        <div>
+                            <h3>Takip numaranızı girin</h3>
+                            <p>Kargonuz için size verilen takip numarasını sorgu alanına yazın.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-line"></div>
+
+                <div class="step-item">
+                    <div class="step-icon">
+                        <svg viewBox="0 0 64 64" aria-hidden="true">
+                            <path d="M14 22h36v20H14z"></path>
+                            <path d="M22 22c0 4-3 6-8 6M22 42c0-4-3-6-8-6"></path>
+                            <path d="M42 22c0 4 3 6 8 6M42 42c0-4 3-6 8-6"></path>
+                        </svg>
+                    </div>
+
+                    <div class="step-info">
+                        <span>2</span>
+                        <div>
+                            <h3>Gönderi durumunu görüntüleyin</h3>
+                            <p>Gönderinizin durumunu görün.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="step-line"></div>
+
+                <div class="step-item">
+                    <div class="step-icon">
+                        <svg viewBox="0 0 64 64" aria-hidden="true">
+                            <circle cx="28" cy="28" r="16"></circle>
+                            <path d="M40 40l12 12"></path>
+                        </svg>
+                    </div>
+
+                    <div class="step-info">
+                        <span>3</span>
+                        <div>
+                            <h3>Teslimat sürecini izleyin</h3>
+                            <p>Gönderinizin teslimat sürecini sistem üzerinden takip edin.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+</main>
+
+<footer class="site-footer" id="contact">
+    <div class="container footer-grid">
+
+        <div class="footer-brand">
+            <a th:href="@{/}" class="brand footer-logo-brand">
+                <div class="brand-icon">
+                    <span class="box-top"></span>
+                    <span class="box-side"></span>
+                </div>
+
+                <div class="brand-name">
+                    <strong>Nova<span>Kargo</span></strong>
+                </div>
+            </a>
+
+            <p>
+                NovaKargo, Türkiye genelinde hızlı, güvenilir ve ekonomik
+                kargo hizmeti sunan bir lojistik çözüm platformudur.
+            </p>
+
+            <div class="social-list">
+                <a href="#">f</a>
+                <a href="#">ig</a>
+                <a href="#">in</a>
+                <a href="#">✉</a>
+            </div>
+        </div>
+
+        <div class="footer-links">
+            <h4>Hızlı Linkler</h4>
+
+            <div class="footer-link-grid">
+                <a href="#">Ana Sayfa</a>
+                <a href="#">Hakkımızda</a>
+                <a href="#services">Hizmetler</a>
+                <a href="#">SSS</a>
+                <a href="#tracking">Kargo Takip</a>
+                <a href="#contact">İletişim</a>
+            </div>
+        </div>
+
+        <div class="footer-contact">
+            <h4>İletişim</h4>
+
+            <ul>
+                <li>
+                    <span>☎</span>
+                    0850 123 45 67
+                </li>
+                <li>
+                    <span>✉</span>
+                    info@novakargo.com.tr
+                </li>
+                <li>
+                    <span>⌖</span>
+                    İstanbul, Türkiye
+                </li>
+            </ul>
+        </div>
+
+    </div>
+
+    <div class="container footer-bottom">
+        <span>© 2026 NovaKargo - Üniversite Dönem Projesi Demo Tasarımı</span>
+    </div>
+</footer>
+
+</body>
+</html>

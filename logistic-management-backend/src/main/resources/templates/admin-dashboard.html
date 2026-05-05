@@ -2,108 +2,215 @@
 <html lang="tr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Workspace - KargoSync</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link th:href="@{/css/dashboard.css}" rel="stylesheet">
+    <title>NovaKargo | Admin Panel</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/admin-dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+
+    <script th:src="@{/js/theme.js}" defer></script>
+    <script th:src="@{/js/admin-dashboard.js}" defer></script>
 </head>
 <body>
 
+<header class="site-header">
+    <div class="container header-inner">
+        <a th:href="@{/}" class="brand">
+            <div class="brand-icon"><span class="box-top"></span><span class="box-side"></span></div>
+            <strong>Nova<span>Kargo</span></strong>
+        </a>
 
-<header class="topbar">
-    <div class="brand"><i class="fa-solid fa-layer-group"></i> KargoSync Workspace</div>
+        <nav class="menu">
+            <button class="menu-item active" data-section="dashboardSection">Dashboard</button>
+            <button class="menu-item" data-section="shipmentsSection">Kargolar</button>
+            <button class="menu-item" data-section="customersSection">Kargo Müşterileri</button>
+            <button class="menu-item" data-section="usersSection">Kullanıcılar</button>
+            <button class="menu-item" data-section="branchesSection">Şubeler</button>
+        </nav>
 
-    <div class="nav-links">
-        <button class="nav-btn active">Operasyon Merkezi</button>
-        <button class="nav-btn">Müşteri Ağı</button>
-        <button class="nav-btn">Lojistik Rotaları</button>
-    </div>
-
-    <div>
-        <form th:action="@{/logout}" method="post" style="margin: 0;">
-            <button type="submit" class="nav-btn" style="color: #ef4444;"><i class="fa-solid fa-power-off"></i> Çıkış</button>
+        <form th:action="@{/logout}" action="/logout" method="post">
+            <button type="submit" class="logout-button">Çıkış Yap</button>
         </form>
     </div>
 </header>
 
-
-<main class="main-container">
-
-
-    <div class="panel-card">
-        <div class="panel-title">Canlı Operasyon Özeti <span style="font-size: 0.8rem; color: #6b7280; font-weight: 400;">(Son 24 Saat)</span></div>
-
-        <div class="stats-row">
-            <div class="micro-stat">
-                <h4>Bekleyen / İşlemde</h4>
-                <h2 id="stat-pending">-</h2>
+<main class="dashboard-layout">
+    <section class="admin-hero">
+        <div class="container hero-grid">
+            <div>
+                <span class="eyebrow">Yönetim Paneli</span>
+                <h1>Kargo operasyonlarını kurumsal panelden yönetin.</h1>
+                <p>
+                    Gönderi durumlarını takip edin, kullanıcı ve müşteri kayıtlarını görüntüleyin,
+                    şube bilgilerini tek ekrandan kontrol edin.
+                </p>
             </div>
-            <div class="micro-stat" style="border-color: #e0e7ff;">
-                <h4>Aktif Dağıtımda</h4>
-                <h2 id="stat-transit" style="color: #4338ca;">-</h2>
-            </div>
+
+            <button id="refreshButton" class="refresh-button">Verileri Yenile</button>
+        </div>
+    </section>
+
+    <section id="dashboardSection" class="container content-section active-section">
+        <div class="stats-grid">
+            <article class="stat-card"><span>Toplam Kargo</span><strong id="totalShipments">0</strong></article>
+            <article class="stat-card"><span>Bekleyen</span><strong id="pendingShipments">0</strong></article>
+            <article class="stat-card"><span>Yolda</span><strong id="inTransitShipments">0</strong></article>
+            <article class="stat-card"><span>Teslim Edilen</span><strong id="deliveredShipments">0</strong></article>
         </div>
 
-        <h3 style="font-size: 1rem; margin-bottom: 15px; color: var(--text-gray);">Son Eklenen Gönderiler</h3>
-        <div class="list-wrapper" id="shipment-list">
-            <div style="text-align: center; color: #9ca3af; padding: 20px;">Veriler yükleniyor...</div>
+        <div class="panel-card">
+            <div class="panel-header">
+                <div>
+                    <span class="section-label">Son Kargolar</span>
+                    <h2>Sistemdeki son gönderiler</h2>
+                    <p>En son oluşturulan gönderiler ve güncel durumları.</p>
+                </div>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Takip No</th>
+                        <th>Gönderici</th>
+                        <th>Alıcı</th>
+                        <th>Durum</th>
+                        <th>Ücret</th>
+                    </tr>
+                    </thead>
+                    <tbody id="latestShipmentsTable">
+                    <tr><td colspan="5">Veriler yükleniyor...</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-    </div>
+    </section>
 
-
-    <div class="panel-card" style="background: #fafafa;">
-        <div class="panel-title" style="color: var(--primary);">Hızlı Gönderi Oluştur</div>
-
-        <form id="quickShipmentForm" style="display: flex; flex-direction: column; height: 100%;">
-
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div class="input-group">
-                    <label>Gönderici Müşteri</label>
-                    <select id="senderId" class="clean-input" required>
-                        <option value="" disabled selected>Müşteriler Yükleniyor...</option>
-                    </select>
+    <section id="shipmentsSection" class="container content-section">
+        <div class="panel-card">
+            <div class="panel-header split-header">
+                <div>
+                    <span class="section-label">Kargolar</span>
+                    <h2>Tüm kargo kayıtları</h2>
+                    <p>Kargo kayıtlarını görüntüleyin ve durumlarını güncelleyin.</p>
                 </div>
-                <div class="input-group">
-                    <label>Alıcı Müşteri</label>
-                    <select id="receiverId" class="clean-input" required>
-                        <option value="" disabled selected>Müşteriler Yükleniyor...</option>
-                    </select>
+                <input type="text" id="shipmentSearchInput" class="search-input" placeholder="Takip no, gönderici veya alıcı ara">
+            </div>
+
+            <div id="dashboardMessage" class="message-box hidden"></div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Takip No</th>
+                        <th>Gönderici</th>
+                        <th>Alıcı</th>
+                        <th>Durum</th>
+                        <th>Ücret</th>
+                        <th>İşlem</th>
+                    </tr>
+                    </thead>
+                    <tbody id="shipmentsTable">
+                    <tr><td colspan="6">Veriler yükleniyor...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section id="customersSection" class="container content-section">
+        <div class="panel-card">
+            <div class="panel-header">
+                <div>
+                    <span class="section-label">Kargo Müşterileri</span>
+                    <h2>Gönderici ve alıcı kayıtları</h2>
+                    <p>Kargolarda kullanılan müşteri kayıtları.</p>
                 </div>
             </div>
-            
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
-                <div class="input-group">
-                    <label>Çıkış Adresi</label>
-                    <select id="originId" class="clean-input" required>
-                        <option value="" disabled selected>Adresler Yükleniyor...</option>
-                    </select>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ad Soyad</th>
+                        <th>Telefon</th>
+                        <th>Tip</th>
+                    </tr>
+                    </thead>
+                    <tbody id="customersTable">
+                    <tr><td colspan="4">Veriler yükleniyor...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section id="usersSection" class="container content-section">
+        <div class="panel-card">
+            <div class="panel-header">
+                <div>
+                    <span class="section-label">Kullanıcılar</span>
+                    <h2>Sisteme giriş yapabilen hesaplar</h2>
+                    <p>Admin, kurye ve müşteri kullanıcılarını görüntüleyin.</p>
                 </div>
-                <div class="input-group">
-                    <label>Varış Adresi</label>
-                    <select id="destId" class="clean-input" required>
-                        <option value="" disabled selected>Adresler Yükleniyor...</option>
-                    </select>
+            </div>
+
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Ad Soyad</th>
+                        <th>E-posta</th>
+                        <th>Telefon</th>
+                        <th>Rol</th>
+                        <th>Durum</th>
+                    </tr>
+                    </thead>
+                    <tbody id="usersTable">
+                    <tr><td colspan="6">Veriler yükleniyor...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
+    <section id="branchesSection" class="container content-section">
+        <div class="panel-card">
+            <div class="panel-header">
+                <div>
+                    <span class="section-label">Şubeler</span>
+                    <h2>Sistemdeki şube kayıtları</h2>
+                    <p>NovaKargo şubelerini ve aktarma merkezlerini görüntüleyin.</p>
                 </div>
             </div>
 
-            <div class="input-group">
-                <label>Ağırlık (kg)</label>
-                <input type="number" step="0.1" id="weight" class="clean-input" required placeholder="0.0">
+            <div class="table-wrapper">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Şube Adı</th>
+                        <th>Şehir</th>
+                        <th>Aktarma Merkezi</th>
+                    </tr>
+                    </thead>
+                    <tbody id="branchesTable">
+                    <tr><td colspan="4">Veriler yükleniyor...</td></tr>
+                    </tbody>
+                </table>
             </div>
-
-            <div class="input-group">
-                <label>Mesafe (km)</label>
-                <input type="number" step="0.1" id="distance" class="clean-input" required placeholder="0.0">
-            </div>
-
-            <div style="margin-top: auto;">
-                <div id="form-alert" style="text-align: center; margin-bottom: 15px; font-weight: 500; font-size: 0.9rem;"></div>
-                <button type="submit" class="btn-primary"><i class="fa-solid fa-paper-plane me-2"></i> Kargoyu Sisteme İşle</button>
-            </div>
-        </form>
-
-    </div>
+        </div>
+    </section>
 </main>
 
-<script th:src="@{/js/admin.js}"></script>
+<footer class="footer">
+    <div class="container footer-inner">
+        <span>NovaKargo © 2026</span>
+        <span>Admin Panel</span>
+    </div>
+</footer>
+
 </body>
 </html>

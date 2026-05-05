@@ -2,40 +2,102 @@
 <html lang="tr" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <title>NovaKargo | Giriş Yap</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Giriş Yap - KargoSync</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link th:href="@{/css/auth.css}" rel="stylesheet">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <script th:src="@{/js/theme.js}" defer></script>
 </head>
 <body>
-<div class="auth-wrapper">
-    <div class="auth-card">
-        <div class="brand-logo">
-            <i class="fa-solid fa-truck-fast text-primary me-2"></i>Kargo<span>Sync</span>
-        </div>
-        <div class="auth-subtitle">Yönetim paneline hoş geldiniz</div>
 
-        <div th:if="${param.error}" class="alert alert-danger py-2 text-center" style="font-size: 0.9rem;">
-            Hatalı e-posta veya şifre girdiniz.
-        </div>
+<header class="site-header">
+    <div class="container header-inner">
+        <a th:href="@{/}" class="brand">
+            <div class="brand-icon"><span class="box-top"></span><span class="box-side"></span></div>
+            <strong>Nova<span>Kargo</span></strong>
+        </a>
 
-        <form th:action="@{/login}" method="post">
-            <div class="mb-3">
-                <label class="form-label">E-posta Adresi</label>
-                <input type="email" name="username" class="form-control" placeholder="E-posta adresiniz" required>
-            </div>
-            <div class="mb-4">
-                <label class="form-label">Şifre</label>
-                <input type="password" name="password" class="form-control" placeholder="••••••••" required>
-            </div>
-            <button type="submit" class="btn-corp"><i class="fa-solid fa-right-to-bracket me-2"></i>Giriş Yap</button>
-        </form>
-
-        <div class="auth-footer text-center mt-3" style="font-size: 0.9rem;">
-            Henüz üye değil misiniz? <a th:href="@{/register}">Hesap Oluşturun</a>
-        </div>
+        <nav class="main-nav">
+            <a th:href="@{/}">Ana Sayfa</a>
+            <a th:href="@{/#tracking}">Kargo Takip</a>
+            <a th:href="@{/#pricing}">Ücret Hesaplama</a>
+        </nav>
     </div>
-</div>
+</header>
+
+<main class="auth-page">
+    <section class="auth-visual">
+        <div class="visual-card">
+            <span class="eyebrow">NovaKargo Panel Girişi</span>
+            <h1>Hesabınıza giriş yapın.</h1>
+            <p>
+                Adminler yönetim paneline, kullanıcılar ise kendi işlem ekranına yönlendirilir.
+                Sistem rol bazlı erişim mantığıyla çalışır.
+            </p>
+
+            <div class="feature-list">
+                <div>
+                    <span>01</span>
+                    <strong>Kargo operasyonları</strong>
+                    <small>Admin panelinde gönderi, kullanıcı ve şube takibi.</small>
+                </div>
+                <div>
+                    <span>02</span>
+                    <strong>Kullanıcı işlemleri</strong>
+                    <small>Kargo sorgulama, ücret hesaplama ve şube görüntüleme.</small>
+                </div>
+                <div>
+                    <span>03</span>
+                    <strong>Güvenli erişim</strong>
+                    <small>Yetkiye göre doğru panele yönlendirme.</small>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="auth-panel">
+        <form class="auth-card" th:action="@{/login}" method="post">
+            <div class="form-head">
+                <span>Giriş Paneli</span>
+                <h2>Giriş Yap</h2>
+                <p>E-posta ve şifrenizle sisteme giriş yapın.</p>
+            </div>
+
+            <div th:if="${param.error}" class="alert alert-error">
+                E-posta veya şifre hatalı. Lütfen tekrar deneyin.
+            </div>
+
+            <div th:if="${param.registered}" class="alert alert-success">
+                Kayıt işlemi başarılı. Şimdi hesabınızla giriş yapabilirsiniz.
+            </div>
+
+            <div th:if="${param.unauthorized}" class="alert alert-error">
+                Bu sayfaya erişim yetkiniz yok. Lütfen yetkili bir hesapla giriş yapın.
+            </div>
+
+            <div th:if="${param.logout}" class="alert alert-success">
+                Başarıyla çıkış yaptınız.
+            </div>
+
+            <div class="input-group">
+                <label for="email">E-posta</label>
+                <input type="email" id="email" name="username" placeholder="ornek@mail.com" autocomplete="email" required>
+            </div>
+
+            <div class="input-group">
+                <label for="password">Şifre</label>
+                <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
+            </div>
+
+            <button type="submit" class="primary-button">Giriş Yap</button>
+
+            <p class="helper-text">
+                Hesabınız yok mu?
+                <a th:href="@{/register}">Kayıt olun</a>
+            </p>
+        </form>
+    </section>
+</main>
+
 </body>
 </html>

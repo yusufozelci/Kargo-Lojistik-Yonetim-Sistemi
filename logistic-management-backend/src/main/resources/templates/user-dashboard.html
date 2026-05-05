@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>NovaKargo | Kullanıcı Paneli</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/user-dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <script th:src="@{/js/theme.js}" defer></script>
+</head>
+<body>
+
+<header class="site-header">
+    <div class="container header-inner">
+        <a th:href="@{/}" class="brand">
+            <div class="brand-icon"><span class="box-top"></span><span class="box-side"></span></div>
+            <strong>Nova<span>Kargo</span></strong>
+        </a>
+
+        <nav class="main-nav">
+            <a th:href="@{/}" >Ana Sayfa</a>
+            <a href="#trackingPanel">Kargo Takip</a>
+            <a href="#pricingPanel">Ücret Hesaplama</a>
+            <a href="#branchesPanel">Şubeler</a>
+        </nav>
+
+        <div class="header-actions">
+            <span class="user-chip" th:text="${email}">kullanici@mail.com</span>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="logout-button">Çıkış Yap</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="dashboard-hero">
+        <div class="container hero-grid">
+            <div>
+                <span class="eyebrow">Kullanıcı Paneli</span>
+                <h1>Kargo işlemlerinizi tek ekrandan takip edin.</h1>
+                <p>
+                    Takip kodu ile gönderi durumunu sorgulayabilir, tahmini taşıma ücretini hesaplayabilir
+                    ve kayıtlı NovaKargo şubelerini görüntüleyebilirsiniz.
+                </p>
+            </div>
+
+            <div class="quick-card">
+                <strong>Aktif Kullanıcı</strong>
+                <span th:text="${email}">kullanici@mail.com</span>
+                <small>Müşteri işlem ekranı</small>
+            </div>
+        </div>
+    </section>
+
+    <section class="container panel-grid">
+        <article class="panel-card" id="trackingPanel">
+            <div class="panel-head">
+                <div>
+                    <span>Kargo Takip</span>
+                    <h2>Takip numarasıyla sorgula</h2>
+                </div>
+                <div class="round-icon">⌕</div>
+            </div>
+
+            <p class="card-desc">Takip numaranızı girerek gönderinizin mevcut durumunu görüntüleyebilirsiniz.</p>
+
+            <form th:action="@{/user-dashboard/tracking}" method="get" class="form-block">
+                <div class="input-group">
+                    <label for="trackingNumber">Takip Numarası</label>
+                    <input type="text" id="trackingNumber" name="trackingNumber" placeholder="Örn: TRK-A1B2C3D4" th:value="${userTrackingNumber}" required>
+                </div>
+                <button type="submit" class="primary-button">Kargoyu Sorgula</button>
+            </form>
+
+            <div th:if="${userTrackingError}" class="message-box error">
+                <span th:text="${userTrackingError}">Kargo bulunamadı.</span>
+            </div>
+
+            <div th:if="${userShipment}" class="result-card">
+                <div class="result-title">
+                    <span>Kargo Bilgileri</span>
+                    <strong th:text="${userShipment.trackingCode}">TRK-XXXX</strong>
+                </div>
+
+                <div class="result-grid">
+                    <div>
+                        <small>Gönderici</small>
+                        <strong th:text="${userShipment.sender != null ? userShipment.sender.fullName : '-'}">-</strong>
+                    </div>
+                    <div>
+                        <small>Alıcı</small>
+                        <strong th:text="${userShipment.receiver != null ? userShipment.receiver.fullName : '-'}">-</strong>
+                    </div>
+                    <div>
+                        <small>Durum</small>
+                        <strong th:switch="${userShipment.status != null ? userShipment.status.name() : 'UNKNOWN'}">
+                            <span th:case="'PENDING'" class="status-badge status-pending">Beklemede</span>
+                            <span th:case="'IN_TRANSIT'" class="status-badge status-transit">Yolda</span>
+                            <span th:case="'DELIVERED'" class="status-badge status-delivered">Teslim Edildi</span>
+                            <span th:case="'CANCELLED'" class="status-badge status-cancelled">İptal Edildi</span>
+                            <span th:case="*" class="status-badge">Bilinmiyor</span>
+                        </strong>
+                    </div>
+                    <div>
+                        <small>Ücret</small>
+                        <strong th:text="${userShipment.totalPrice != null ? #numbers.formatDecimal(userShipment.totalPrice, 1, 2) + ' TL' : '-'}">-</strong>
+                    </div>
+                </div>
+            </div>
+        </article>
+
+        <article class="panel-card" id="pricingPanel">
+            <div class="panel-head">
+                <div>
+                    <span>Ücret Hesaplama</span>
+                    <h2>Tahmini gönderi ücreti</h2>
+                </div>
+                <div class="round-icon">₺</div>
+            </div>
+
+            <p class="card-desc">Ağırlık ve mesafe bilgisi girerek tahmini gönderi ücretini hesaplayabilirsiniz.</p>
+
+            <form th:action="@{/user-dashboard/calculate-price}" method="get" class="form-block">
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="weight">Ağırlık</label>
+                        <input type="number" id="weight" name="weight" min="0.1" step="0.1" placeholder="Örn: 2.5" th:value="${userWeight}" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="distance">Mesafe</label>
+                        <input type="number" id="distance" name="distance" min="1" step="0.1" placeholder="Örn: 350" th:value="${userDistance}" required>
+                    </div>
+                </div>
+                <button type="submit" class="secondary-button">Ücreti Hesapla</button>
+            </form>
+
+            <div th:if="${userPriceError}" class="message-box error">
+                <span th:text="${userPriceError}">Hata oluştu.</span>
+            </div>
+
+            <div th:if="${userCalculatedPrice}" class="price-result">
+                <div><span>Ağırlık</span><strong th:text="${userWeight + ' kg'}">0 kg</strong></div>
+                <div><span>Mesafe</span><strong th:text="${userDistance + ' km'}">0 km</strong></div>
+                <div class="total-price"><span>Tahmini Ücret</span><strong th:text="${#numbers.formatDecimal(userCalculatedPrice, 1, 2) + ' TL'}">0 TL</strong></div>
+            </div>
+        </article>
+    </section>
+
+    <section class="container panel-card branches-card" id="branchesPanel">
+        <div class="panel-head">
+            <div>
+                <span>Şubeler</span>
+                <h2>Kayıtlı NovaKargo şubeleri</h2>
+            </div>
+            <div class="round-icon">⌂</div>
+        </div>
+
+        <p class="card-desc">Sistemde kayıtlı şube bilgilerini buradan görüntüleyebilirsiniz.</p>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Şube Adı</th>
+                    <th>Şehir</th>
+                    <th>Aktarma Merkezi</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:if="${branches == null || branches.isEmpty()}">
+                    <td colspan="4">Henüz kayıtlı şube bulunmuyor.</td>
+                </tr>
+                <tr th:each="branch : ${branches}">
+                    <td th:text="${branch.id}">1</td>
+                    <td th:text="${branch.name}">Merkez Şube</td>
+                    <td th:text="${branch.cityName}">Samsun</td>
+                    <td>
+                        <span th:if="${branch.isTransferCenter}" class="status-badge status-transit">Evet</span>
+                        <span th:unless="${branch.isTransferCenter}" class="status-badge status-pending">Hayır</span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="container footer-inner">
+        <span>NovaKargo © 2026</span>
+        <span>Kullanıcı Paneli</span>
+    </div>
+</footer>
+
+</body>
+</html>

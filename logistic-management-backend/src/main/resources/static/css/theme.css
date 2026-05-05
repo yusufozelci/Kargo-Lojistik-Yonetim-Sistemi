@@ -1,0 +1,373 @@
+/* NovaKargo ortak koyu mod dosyası
+   Bu dosyayı sayfaya özel CSS dosyasından SONRA bağla. */
+
+:root {
+    color-scheme: light;
+}
+
+.theme-toggle {
+    min-height: 42px;
+    padding: 0 14px;
+    border: 1px solid #e4eaf2;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #071f49;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 14px;
+    font-weight: 900;
+    cursor: pointer;
+    white-space: nowrap;
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.06);
+}
+
+.theme-toggle:hover {
+    border-color: #ff6b00;
+    color: #ff6b00;
+}
+
+.header-actions {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+:root[data-theme="dark"] {
+    color-scheme: dark;
+    --orange: #ff7a1a;
+    --orange-dark: #ff8a2a;
+    --navy: #f5f5f5;
+    --navy-2: #ffffff;
+    --text: #f3f4f6;
+    --muted: #a1a1aa;
+    --light: #050505;
+    --bg: #050505;
+    --surface: #0d0d0d;
+    --border: #27272a;
+    --shadow: none;
+}
+
+:root[data-theme="dark"] html,
+:root[data-theme="dark"] body {
+    background: #050505 !important;
+    color: #f3f4f6 !important;
+}
+
+/* Header */
+:root[data-theme="dark"] .site-header,
+:root[data-theme="dark"] .main-header,
+:root[data-theme="dark"] header {
+    background: rgba(8, 8, 8, 0.96) !important;
+    border-color: #222222 !important;
+    box-shadow: none !important;
+}
+
+:root[data-theme="dark"] .brand,
+:root[data-theme="dark"] .brand strong,
+:root[data-theme="dark"] .brand-name strong,
+:root[data-theme="dark"] .main-nav a,
+:root[data-theme="dark"] .menu-item {
+    color: #f5f5f5 !important;
+}
+
+:root[data-theme="dark"] .brand strong span,
+:root[data-theme="dark"] .brand-name span,
+:root[data-theme="dark"] .main-nav a:hover,
+:root[data-theme="dark"] .main-nav a.active,
+:root[data-theme="dark"] .menu-item:hover {
+    color: #ff7a1a !important;
+}
+
+:root[data-theme="dark"] .brand-icon::before {
+    border-color: #f5f5f5 !important;
+}
+
+:root[data-theme="dark"] .theme-toggle {
+    background: #111111 !important;
+    color: #f5f5f5 !important;
+    border-color: #2a2a2a !important;
+    box-shadow: none !important;
+}
+
+:root[data-theme="dark"] .theme-toggle:hover {
+    color: #ff7a1a !important;
+    border-color: #ff7a1a !important;
+}
+
+/* Genel arka planlar */
+:root[data-theme="dark"] .hero-section,
+:root[data-theme="dark"] .dashboard-hero,
+:root[data-theme="dark"] .admin-hero,
+:root[data-theme="dark"] .auth-page,
+:root[data-theme="dark"] .auth-panel,
+:root[data-theme="dark"] .auth-visual,
+:root[data-theme="dark"] .service-section,
+:root[data-theme="dark"] .pricing-section,
+:root[data-theme="dark"] .steps-section,
+:root[data-theme="dark"] .dashboard-layout,
+:root[data-theme="dark"] main {
+    background: #050505 !important;
+}
+
+:root[data-theme="dark"] .hero-section {
+    background:
+        linear-gradient(90deg, #050505 0%, rgba(5,5,5,0.96) 34%, rgba(5,5,5,0.74) 54%, rgba(5,5,5,0.10) 100%),
+        #050505 !important;
+    border-color: #222222 !important;
+}
+
+:root[data-theme="dark"] .hero-visual::before {
+    background: linear-gradient(90deg, #050505 0%, rgba(5,5,5,0.72) 20%, rgba(5,5,5,0.06) 48%) !important;
+}
+
+:root[data-theme="dark"] .auth-page {
+    background: #050505 !important;
+}
+
+:root[data-theme="dark"] .admin-hero,
+:root[data-theme="dark"] .dashboard-hero {
+    background:
+        linear-gradient(90deg, #050505 0%, #050505 58%, #0b0b0b 58%, #0b0b0b 100%) !important;
+    border-color: #222222 !important;
+}
+
+/* Kartlar */
+:root[data-theme="dark"] .service-card,
+:root[data-theme="dark"] .pricing-card,
+:root[data-theme="dark"] .tracking-result,
+:root[data-theme="dark"] .visual-card,
+:root[data-theme="dark"] .auth-card,
+:root[data-theme="dark"] .feature-list div,
+:root[data-theme="dark"] .panel-card,
+:root[data-theme="dark"] .stat-card,
+:root[data-theme="dark"] .quick-card,
+:root[data-theme="dark"] .result-card,
+:root[data-theme="dark"] .branches-card,
+:root[data-theme="dark"] .info-strip,
+:root[data-theme="dark"] .price-result,
+:root[data-theme="dark"] .pricing-result,
+:root[data-theme="dark"] .tracking-form,
+:root[data-theme="dark"] .user-chip {
+    background: #0d0d0d !important;
+    border-color: #27272a !important;
+    box-shadow: none !important;
+}
+
+:root[data-theme="dark"] .visual-card,
+:root[data-theme="dark"] .pricing-card {
+    background:
+        linear-gradient(135deg, rgba(255, 122, 26, 0.10), transparent 44%),
+        #0d0d0d !important;
+}
+
+:root[data-theme="dark"] .service-icon,
+:root[data-theme="dark"] .round-icon,
+:root[data-theme="dark"] .step-icon,
+:root[data-theme="dark"] .price-input span {
+    background: #151515 !important;
+    border-color: #2a2a2a !important;
+    color: #f5f5f5 !important;
+}
+
+/* Yazılar */
+:root[data-theme="dark"] h1,
+:root[data-theme="dark"] h2,
+:root[data-theme="dark"] h3,
+:root[data-theme="dark"] h4,
+:root[data-theme="dark"] .hero-content h1,
+:root[data-theme="dark"] .visual-card h1,
+:root[data-theme="dark"] .form-head h2,
+:root[data-theme="dark"] .dashboard-hero h1,
+:root[data-theme="dark"] .admin-hero h1,
+:root[data-theme="dark"] .panel-head h2,
+:root[data-theme="dark"] .panel-header h2,
+:root[data-theme="dark"] .stat-card strong,
+:root[data-theme="dark"] .result-grid strong,
+:root[data-theme="dark"] .result-card strong,
+:root[data-theme="dark"] .price-result strong,
+:root[data-theme="dark"] .pricing-result strong,
+:root[data-theme="dark"] .input-group label,
+:root[data-theme="dark"] .field label,
+:root[data-theme="dark"] .price-field label {
+    color: #f5f5f5 !important;
+}
+
+:root[data-theme="dark"] p,
+:root[data-theme="dark"] small,
+:root[data-theme="dark"] .hero-content p,
+:root[data-theme="dark"] .visual-card p,
+:root[data-theme="dark"] .dashboard-hero p,
+:root[data-theme="dark"] .admin-hero p,
+:root[data-theme="dark"] .card-desc,
+:root[data-theme="dark"] .helper-text,
+:root[data-theme="dark"] .panel-header p,
+:root[data-theme="dark"] .service-card p,
+:root[data-theme="dark"] .step-info p,
+:root[data-theme="dark"] .footer-bottom,
+:root[data-theme="dark"] .footer-inner,
+:root[data-theme="dark"] .user-chip,
+:root[data-theme="dark"] .result-grid small,
+:root[data-theme="dark"] .result-title span,
+:root[data-theme="dark"] .price-result span,
+:root[data-theme="dark"] .pricing-result span {
+    color: #a1a1aa !important;
+}
+
+:root[data-theme="dark"] .eyebrow,
+:root[data-theme="dark"] .section-label,
+:root[data-theme="dark"] .form-head span,
+:root[data-theme="dark"] .panel-head span,
+:root[data-theme="dark"] .pricing-info span {
+    color: #ff7a1a !important;
+}
+
+/* Form elemanları */
+:root[data-theme="dark"] input,
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] textarea,
+:root[data-theme="dark"] .search-input,
+:root[data-theme="dark"] .input-group input,
+:root[data-theme="dark"] .price-input,
+:root[data-theme="dark"] .tracking-input input,
+:root[data-theme="dark"] .field input {
+    background: #111111 !important;
+    border-color: #2a2a2a !important;
+    color: #f5f5f5 !important;
+}
+
+:root[data-theme="dark"] input::placeholder,
+:root[data-theme="dark"] textarea::placeholder {
+    color: #71717a !important;
+}
+
+:root[data-theme="dark"] input:focus,
+:root[data-theme="dark"] select:focus,
+:root[data-theme="dark"] textarea:focus,
+:root[data-theme="dark"] .search-input:focus,
+:root[data-theme="dark"] .input-group input:focus {
+    border-color: #ff7a1a !important;
+    box-shadow: 0 0 0 3px rgba(255, 122, 26, 0.16) !important;
+}
+
+/* Butonlar */
+:root[data-theme="dark"] .create-btn,
+:root[data-theme="dark"] .primary-button,
+:root[data-theme="dark"] .logout-button,
+:root[data-theme="dark"] .tracking-form button,
+:root[data-theme="dark"] .pricing-form button,
+:root[data-theme="dark"] .refresh-button,
+:root[data-theme="dark"] td button,
+:root[data-theme="dark"] .table-wrapper button {
+    box-shadow: none !important;
+}
+
+:root[data-theme="dark"] .secondary-button,
+:root[data-theme="dark"] .refresh-button,
+:root[data-theme="dark"] .menu-item.active {
+    background: #1a1a1a !important;
+    color: #ffffff !important;
+    border-color: #2a2a2a !important;
+}
+
+:root[data-theme="dark"] .secondary-button:hover,
+:root[data-theme="dark"] .refresh-button:hover {
+    background: #242424 !important;
+}
+
+:root[data-theme="dark"] .feature-list span,
+:root[data-theme="dark"] .social-list a {
+    background: #1a1a1a !important;
+    color: #ffffff !important;
+}
+
+/* Tablolar */
+:root[data-theme="dark"] .table-wrapper {
+    border-color: #27272a !important;
+}
+
+:root[data-theme="dark"] table {
+    background: #0d0d0d !important;
+}
+
+:root[data-theme="dark"] th {
+    background: #151515 !important;
+    color: #f5f5f5 !important;
+    border-color: #27272a !important;
+}
+
+:root[data-theme="dark"] td {
+    color: #e5e7eb !important;
+    border-color: #27272a !important;
+}
+
+:root[data-theme="dark"] tr:hover td {
+    background: #121212 !important;
+}
+
+/* Bölüm çizgileri ve footer */
+:root[data-theme="dark"] .steps-section,
+:root[data-theme="dark"] .footer,
+:root[data-theme="dark"] .site-footer,
+:root[data-theme="dark"] .footer-grid,
+:root[data-theme="dark"] .footer-links,
+:root[data-theme="dark"] .footer-contact,
+:root[data-theme="dark"] .footer-bottom,
+:root[data-theme="dark"] .result-grid div,
+:root[data-theme="dark"] .result-card .result-grid div,
+:root[data-theme="dark"] .price-result div,
+:root[data-theme="dark"] .pricing-result div {
+    background: #050505 !important;
+    border-color: #27272a !important;
+}
+
+:root[data-theme="dark"] .footer-link-grid a,
+:root[data-theme="dark"] .footer-contact li {
+    color: #d4d4d8 !important;
+}
+
+:root[data-theme="dark"] .footer-link-grid a:hover {
+    color: #ff7a1a !important;
+}
+
+:root[data-theme="dark"] .stats-section {
+    background: #050505 !important;
+    border-top: 1px solid #27272a !important;
+    border-bottom: 1px solid #27272a !important;
+}
+
+:root[data-theme="dark"] .stat-item {
+    border-color: #27272a !important;
+}
+
+/* Mesajlar */
+:root[data-theme="dark"] .alert-box,
+:root[data-theme="dark"] .message-box.error,
+:root[data-theme="dark"] .alert-error {
+    background: rgba(239, 68, 68, 0.12) !important;
+    color: #fca5a5 !important;
+    border-color: rgba(239, 68, 68, 0.25) !important;
+}
+
+:root[data-theme="dark"] .message-box.success,
+:root[data-theme="dark"] .alert-success {
+    background: rgba(34, 197, 94, 0.12) !important;
+    color: #86efac !important;
+    border-color: rgba(34, 197, 94, 0.25) !important;
+}
+
+/* Responsive */
+@media (max-width: 720px) {
+    .header-actions {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 1fr;
+    }
+
+    .theme-toggle {
+        width: 100%;
+    }
+}
