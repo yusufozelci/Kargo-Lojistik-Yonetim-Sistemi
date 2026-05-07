@@ -141,42 +141,55 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function renderShipmentsTable(data) {
-        const shipmentsTable = document.getElementById("shipmentsTable");
+        const tbody = document.getElementById("shipmentsTable");
+        if (!tbody) return;
 
         if (!data || data.length === 0) {
-            shipmentsTable.innerHTML = `<tr><td colspan="6">Kargo kaydı bulunamadı.</td></tr>`;
+            tbody.innerHTML = `<tr><td colspan="6">Kargo bulunamadı.</td></tr>`;
             return;
         }
 
-        shipmentsTable.innerHTML = data.map(shipment => `
+        // Sadece rolü COURIER olan kullanıcıları filtrele
+        const couriers = users.filter(u => u.roleName && u.roleName.includes("COURIER"));
+
+        let courierOptions = `<option value="">Kurye Seç</option>`;
+        couriers.forEach(c => {
+            courierOptions += `<option value="${c.id}">${c.fullName}</option>`;
+        });
+
+        tbody.innerHTML = data.map(shipment => `
             <tr>
-                <td>${escapeHtml(shipment.trackingCode)}</td>
-                <td>${escapeHtml(shipment.senderName)}</td>
-                <td>${escapeHtml(shipment.receiverName)}</td>
+                <td><strong>${shipment.trackingCode}</strong></td>
+                <td>${shipment.senderName}</td>
+                <td>${shipment.receiverName}</td>
                 <td>${renderStatusBadge(shipment.status)}</td>
                 <td>${formatCurrency(shipment.totalPrice)}</td>
-                <td>
-                    <select class="status-select" data-id="${shipment.id}">
-                        <option value="PENDING" ${shipment.status === "PENDING" ? "selected" : ""}>Beklemede</option>
-                        <option value="IN_TRANSIT" ${shipment.status === "IN_TRANSIT" ? "selected" : ""}>Yolda</option>
-                        <option value="DELIVERED" ${shipment.status === "DELIVERED" ? "selected" : ""}>Teslim Edildi</option>
-                        <option value="CANCELLED" ${shipment.status === "CANCELLED" ? "selected" : ""}>İptal Edildi</option>
-                    </select>
+                <td style="min-width: 200px;">
+                    <div style="display: flex; flex-direction: column; gap: 8px;">
+                        
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <select id="status-select-${shipment.id}" style="padding: 6px; border-radius: 6px; border: 1px solid var(--border); outline: none; flex: 1; font-size: 12px;">
+                                <option value="PENDING" ${shipment.status === 'PENDING' ? 'selected' : ''}>Beklemede</option>
+                                <option value="IN_TRANSIT" ${shipment.status === 'IN_TRANSIT' ? 'selected' : ''}>Yolda</option>
+                                <option value="DELIVERED" ${shipment.status === 'DELIVERED' ? 'selected' : ''}>Teslim Edildi</option>
+                                <option value="CANCELLED" ${shipment.status === 'CANCELLED' ? 'selected' : ''}>İptal</option>
+                            </select>
+                            <button class="primary-button" style="height: 28px; padding: 0 8px; font-size: 11px; margin: 0;" 
+                                    onclick="updateShipmentStatus(${shipment.id})">Güncelle</button>
+                        </div>
 
-                    <button class="action-button" data-update-id="${shipment.id}">
-                        Güncelle
-                    </button>
+                        <div style="display: flex; gap: 8px; align-items: center;">
+                            <select id="courier-select-${shipment.id}" style="padding: 6px; border-radius: 6px; border: 1px solid var(--border); outline: none; flex: 1; font-size: 12px;">
+                                ${courierOptions}
+                            </select>
+                            <button style="height: 28px; padding: 0 8px; font-size: 11px; margin: 0; background: var(--border); color: var(--navy); border: none; border-radius: 6px; font-weight: bold; cursor: pointer;" 
+                                    onclick="assignCourier(${shipment.id})">Ata</button>
+                        </div>
+
+                    </div>
                 </td>
             </tr>
         `).join("");
-
-        document.querySelectorAll("[data-update-id]").forEach(button => {
-            button.addEventListener("click", () => {
-                const shipmentId = button.dataset.updateId;
-                const select = document.querySelector(`.status-select[data-id="${shipmentId}"]`);
-                updateShipmentStatus(shipmentId, select.value);
-            });
-        });
     }
 
     function renderCustomersTable() {
@@ -239,24 +252,7 @@ document.addEventListener("DOMContentLoaded", () => {
         `).join("");
     }
 
-    async function updateShipmentStatus(shipmentId, status) {
-        try {
-            const response = await fetch(`/api/shipments/${shipmentId}/durum?yeniDurum=${status}`, {
-                method: "PUT"
-            });
 
-            if (!response.ok) {
-                const errorText = await response.text();
-                throw new Error(errorText || "Kargo durumu güncellenemedi.");
-            }
-
-            showMessage("Kargo durumu başarıyla güncellendi.", "success");
-            await loadDashboardData();
-
-        } catch (error) {
-            showMessage(cleanErrorMessage(error.message), "error");
-        }
-    }
 
     function filterShipments(searchValue) {
         const query = searchValue.toLowerCase().trim();
@@ -448,4 +444,47 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    window.assignCourier = async function(shipmentId) {
+        const selectEl = document.getElementById(`courier-select-${shipmentId}`);
+        const courierId = selectEl.value;
+
+        if (!courierId) {
+            showMessage("Lütfen atamak için bir kurye seçin.", "error");
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/shipments/${shipmentId}/kurye-ata/${courierId}`, {
+                method: "PUT"
+            });
+
+            if (!response.ok) throw new Error("Kurye ataması başarısız oldu.");
+
+            showMessage("Kurye başarıyla atandı ve kargo yola çıkmaya hazır!", "success");
+            await loadDashboardData();
+        } catch (error) {
+            showMessage(error.message, "error");
+        }
+    };
+
+    window.updateShipmentStatus = async function(shipmentId) {
+        const selectEl = document.getElementById(`status-select-${shipmentId}`);
+        const newStatus = selectEl.value;
+
+        try {
+            const response = await fetch(`/api/shipments/${shipmentId}/durum?yeniDurum=${newStatus}`, {
+                method: "PUT"
+            });
+
+            if (!response.ok) {
+                throw new Error("Durum güncellenemedi (Teslim edilmiş kargo değiştirilemez).");
+            }
+
+            showMessage("Kargo durumu başarıyla güncellendi!", "success");
+            await loadDashboardData(); // Tabloyu anında yenile
+        } catch (error) {
+            showMessage(error.message, "error");
+        }
+    };
 });
