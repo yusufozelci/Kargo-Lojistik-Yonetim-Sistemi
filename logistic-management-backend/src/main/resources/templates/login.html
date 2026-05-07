@@ -26,35 +26,6 @@
 </header>
 
 <main class="auth-page">
-    <section class="auth-visual">
-        <div class="visual-card">
-            <span class="eyebrow">NovaKargo Panel Girişi</span>
-            <h1>Hesabınıza giriş yapın.</h1>
-            <p>
-                Adminler yönetim paneline, kullanıcılar ise kendi işlem ekranına yönlendirilir.
-                Sistem rol bazlı erişim mantığıyla çalışır.
-            </p>
-
-            <div class="feature-list">
-                <div>
-                    <span>01</span>
-                    <strong>Kargo operasyonları</strong>
-                    <small>Admin panelinde gönderi, kullanıcı ve şube takibi.</small>
-                </div>
-                <div>
-                    <span>02</span>
-                    <strong>Kullanıcı işlemleri</strong>
-                    <small>Kargo sorgulama, ücret hesaplama ve şube görüntüleme.</small>
-                </div>
-                <div>
-                    <span>03</span>
-                    <strong>Güvenli erişim</strong>
-                    <small>Yetkiye göre doğru panele yönlendirme.</small>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <section class="auth-panel">
         <form class="auth-card" th:action="@{/login}" method="post">
             <div class="form-head">

@@ -27,62 +27,44 @@
 </header>
 
 <main class="auth-page">
-    <section class="auth-visual">
-        <div class="visual-card">
-            <span class="eyebrow">Yeni Kullanıcı Kaydı</span>
-            <h1>NovaKargo hesabınızı oluşturun.</h1>
-            <p>
-                Kayıt olan kullanıcılar sisteme müşteri hesabı olarak dahil olur.
-                Giriş yaptıktan sonra takip, ücret hesaplama ve şube ekranlarına ulaşabilir.
-            </p>
+    <section class="auth-form-container">
+        <div class="auth-card">
+            <h1>Kayıt Ol</h1>
+            <p style="color: var(--muted); margin-bottom: 24px;">NovaKargo sistemine yeni müşteri hesabı oluşturun.</p>
 
-            <div class="info-strip">
-                <div><strong>Kargo Takip</strong><span>Takip koduyla anlık sorgulama</span></div>
-                <div><strong>Ücret Hesaplama</strong><span>Ağırlık ve mesafeye göre tahmin</span></div>
-                <div><strong>Şube Bilgileri</strong><span>Kayıtlı şubeleri görüntüleme</span></div>
-            </div>
+            <form th:action="@{/register}" th:object="${UserRegisterDto}" method="post">
+                <div class="input-group">
+                    <label for="fullName">Ad Soyad</label>
+                    <input type="text" id="fullName" th:field="*{fullName}" placeholder="Örn: Emirhan Uraş" required>
+                    <small class="field-error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></small>
+                </div>
+
+                <div class="input-group">
+                    <label for="email">E-posta</label>
+                    <input type="email" id="email" th:field="*{email}" placeholder="ornek@mail.com" required>
+                    <small class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
+                </div>
+
+                <div class="input-group">
+                    <label for="phone">Telefon</label>
+                    <input type="tel" id="phone" th:field="*{phone}" placeholder="5551234567" required>
+                    <small class="field-error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></small>
+                </div>
+
+                <div class="input-group">
+                    <label for="password">Şifre</label>
+                    <input type="password" id="password" th:field="*{password}" placeholder="En az 6 karakter" required>
+                    <small class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
+                </div>
+
+                <button type="submit" class="primary-button">Hesap Oluştur</button>
+
+                <p class="helper-text" style="margin-top: 16px; text-align: center;">
+                    Zaten hesabınız var mı?
+                    <a th:href="@{/login}" style="color: var(--orange); font-weight: bold; text-decoration: none;">Giriş yapın</a>
+                </p>
+            </form>
         </div>
-    </section>
-
-    <section class="auth-panel">
-        <form class="auth-card" th:action="@{/register}" th:object="${UserRegisterDto}" method="post">
-            <div class="form-head">
-                <span>Kayıt Formu</span>
-                <h2>Kayıt Ol</h2>
-                <p>Hesabınızı oluşturmak için bilgilerinizi girin.</p>
-            </div>
-
-            <div class="input-group">
-                <label for="fullName">Ad Soyad</label>
-                <input type="text" id="fullName" th:field="*{fullName}" placeholder="Örn: Emirhan Uraş" required>
-                <small class="field-error" th:if="${#fields.hasErrors('fullName')}" th:errors="*{fullName}"></small>
-            </div>
-
-            <div class="input-group">
-                <label for="email">E-posta</label>
-                <input type="email" id="email" th:field="*{email}" placeholder="ornek@mail.com" required>
-                <small class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></small>
-            </div>
-
-            <div class="input-group">
-                <label for="phone">Telefon</label>
-                <input type="tel" id="phone" th:field="*{phone}" placeholder="5551234567" required>
-                <small class="field-error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></small>
-            </div>
-
-            <div class="input-group">
-                <label for="password">Şifre</label>
-                <input type="password" id="password" th:field="*{password}" placeholder="En az 6 karakter" required>
-                <small class="field-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}"></small>
-            </div>
-
-            <button type="submit" class="primary-button">Hesap Oluştur</button>
-
-            <p class="helper-text">
-                Zaten hesabınız var mı?
-                <a th:href="@{/login}">Giriş yapın</a>
-            </p>
-        </form>
     </section>
 </main>
 
