@@ -149,7 +149,6 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        // Sadece rolü COURIER olan kullanıcıları filtrele
         const couriers = users.filter(u => u.roleName && u.roleName.includes("COURIER"));
 
         let courierOptions = `<option value="">Kurye Seç</option>`;
@@ -185,6 +184,9 @@ document.addEventListener("DOMContentLoaded", () => {
                             <button style="height: 28px; padding: 0 8px; font-size: 11px; margin: 0; background: var(--border); color: var(--navy); border: none; border-radius: 6px; font-weight: bold; cursor: pointer;" 
                                     onclick="assignCourier(${shipment.id})">Ata</button>
                         </div>
+                        
+                        <button style="height: 28px; margin-top: 4px; width: 100%; border-radius: 6px; border: 1px solid var(--orange); background: transparent; color: var(--orange); font-size: 11px; font-weight: bold; cursor: pointer;" 
+                                onclick="viewTrackingHistory('${shipment.trackingCode}')">Geçmişi Gör</button>
 
                     </div>
                 </td>
@@ -482,9 +484,52 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             showMessage("Kargo durumu başarıyla güncellendi!", "success");
-            await loadDashboardData(); // Tabloyu anında yenile
+            await loadDashboardData();
         } catch (error) {
             showMessage(error.message, "error");
         }
     };
+
+    window.viewTrackingHistory = async function(trackingCode) {
+        try {
+            const response = await fetch(`/api/tracking/${trackingCode}`);
+            if (!response.ok) throw new Error("Geçmiş alınamadı.");
+
+            const history = await response.json();
+
+            document.getElementById("modalTrackingCode").textContent = trackingCode;
+            const timeline = document.getElementById("trackingTimeline");
+
+            if (history.length === 0) {
+                timeline.innerHTML = "<li><div class='timeline-desc'>Henüz bir hareket kaydı bulunmuyor.</div></li>";
+            } else {
+                timeline.innerHTML = history.map(log => `
+                    <li>
+                        <span class="timeline-date">${new Date(log.dateTime).toLocaleString('tr-TR')}</span>
+                        <div class="timeline-desc"><strong>${log.status}:</strong> ${escapeHtml(log.description)}</div>
+                    </li>
+                `).join("");
+            }
+
+            document.getElementById("trackingModal").classList.remove("hidden");
+        } catch (error) {
+            showMessage(error.message, "error");
+        }
+    };
+
+    const closeModalBtn = document.getElementById("closeModalBtn");
+    if (closeModalBtn) {
+        closeModalBtn.addEventListener("click", () => {
+            document.getElementById("trackingModal").classList.add("hidden");
+        });
+    }
+
+    const trackingModal = document.getElementById("trackingModal");
+    if (trackingModal) {
+        trackingModal.addEventListener("click", (e) => {
+            if (e.target === trackingModal) {
+                trackingModal.classList.add("hidden");
+            }
+        });
+    }
 });
