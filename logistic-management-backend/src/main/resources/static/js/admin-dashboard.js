@@ -8,6 +8,8 @@ document.addEventListener("DOMContentLoaded", () => {
     let customers = [];
     let users = [];
     let branches = [];
+    let vehicles = [];
+    let routes = [];
 
     menuItems.forEach(item => {
         item.addEventListener("click", () => {
@@ -34,7 +36,9 @@ document.addEventListener("DOMContentLoaded", () => {
             loadShipments(),
             loadCustomers(),
             loadUsers(),
-            loadBranches()
+            loadBranches(),
+            loadVehicles(),
+            loadRoutes()
         ]);
 
         updateStats();
@@ -43,6 +47,8 @@ document.addEventListener("DOMContentLoaded", () => {
         renderCustomersTable();
         renderUsersTable();
         renderBranchesTable();
+        populateRouteDropdowns();
+        renderRoutesTable();
     }
 
     async function loadShipments() {
@@ -359,5 +365,87 @@ document.addEventListener("DOMContentLoaded", () => {
             .replaceAll(">", "&gt;")
             .replaceAll('"', "&quot;")
             .replaceAll("'", "&#039;");
+    }
+
+    async function loadVehicles() {
+        try {
+            const response = await fetch("/api/vehicles");
+            if (response.ok) vehicles = await response.json();
+        } catch { vehicles = []; }
+    }
+
+    async function loadRoutes() {
+        try {
+            const response = await fetch("/api/routes");
+            if (response.ok) routes = await response.json();
+        } catch { routes = []; }
+    }
+
+    function populateRouteDropdowns() {
+        const vehicleSelect = document.getElementById("vehicleSelect");
+        const depSelect = document.getElementById("departureBranch");
+        const arrSelect = document.getElementById("arrivalBranch");
+
+        if (vehicleSelect) {
+            vehicleSelect.innerHTML = `<option value="">Araç Seçin</option>` +
+                vehicles.map(v => `<option value="${v.id}">${v.plateNumber} (${v.vehicleType})</option>`).join("");
+        }
+
+        const branchOptions = `<option value="">Şube Seçin</option>` +
+            branches.map(b => `<option value="${b.id}">${b.name}</option>`).join("");
+
+        if (depSelect) depSelect.innerHTML = branchOptions;
+        if (arrSelect) arrSelect.innerHTML = branchOptions;
+    }
+
+    function renderRoutesTable() {
+        const routesTable = document.getElementById("routesTable");
+        if (!routesTable) return;
+
+        if (!routes || routes.length === 0) {
+            routesTable.innerHTML = `<tr><td colspan="5">Aktif rota bulunamadı.</td></tr>`;
+            return;
+        }
+
+        routesTable.innerHTML = routes.map(route => `
+            <tr>
+                <td>${route.id}</td>
+                <td>${route.vehicle ? route.vehicle.plateNumber : "-"}</td>
+                <td>${route.departureBranch ? route.departureBranch.name : "-"} ➔ ${route.arrivalBranch ? route.arrivalBranch.name : "-"}</td>
+                <td>${new Date(route.departureTime).toLocaleString('tr-TR')}</td>
+                <td><button class="secondary-button" style="height:32px; padding:0 10px; font-size:12px;" onclick="alert('Kargo yükleme modülü eklenecek')">+ Kargo Yükle</button></td>
+            </tr>
+        `).join("");
+    }
+
+    const createRouteForm = document.getElementById("createRouteForm");
+    if (createRouteForm) {
+        createRouteForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const payload = {
+                vehicleId: document.getElementById("vehicleSelect").value,
+                departureBranchId: document.getElementById("departureBranch").value,
+                arrivalBranchId: document.getElementById("arrivalBranch").value,
+                departureTime: document.getElementById("departureTime").value,
+                arrivalTime: document.getElementById("arrivalTime").value || null
+            };
+
+            try {
+                const response = await fetch("/api/routes", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error("Rota oluşturulamadı.");
+
+                showMessage("Rota başarıyla oluşturuldu.", "success");
+                createRouteForm.reset();
+                await loadDashboardData();
+            } catch (error) {
+                showMessage(error.message, "error");
+            }
+        });
     }
 });

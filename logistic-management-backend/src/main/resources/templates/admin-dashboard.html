@@ -25,6 +25,7 @@
             <button class="menu-item" data-section="customersSection">Kargo Müşterileri</button>
             <button class="menu-item" data-section="usersSection">Kullanıcılar</button>
             <button class="menu-item" data-section="branchesSection">Şubeler</button>
+            <button class="menu-item" data-section="routesSection">Rotalar ve Araçlar</button>
         </nav>
 
         <form th:action="@{/logout}" action="/logout" method="post">
@@ -200,6 +201,81 @@
                     <tr><td colspan="4">Veriler yükleniyor...</td></tr>
                     </tbody>
                 </table>
+            </div>
+        </div>
+    </section>
+
+    <section id="routesSection" class="container content-section">
+        <div class="panel-grid">
+            <div class="panel-card">
+                <div class="panel-header">
+                    <div>
+                        <span class="section-label">Yeni Operasyon</span>
+                        <h2>Rota Oluştur</h2>
+                    </div>
+                </div>
+
+                <form id="createRouteForm" class="form-block">
+                    <div class="input-group">
+                        <label for="vehicleSelect">Araç Seçimi</label>
+                        <select id="vehicleSelect" required>
+                            <option value="">Araç Yükleniyor...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="departureBranch">Çıkış Şubesi</label>
+                            <select id="departureBranch" required>
+                                <option value="">Şube Seçin</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="arrivalBranch">Varış Şubesi</label>
+                            <select id="arrivalBranch" required>
+                                <option value="">Şube Seçin</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="departureTime">Kalkış Zamanı</label>
+                            <input type="datetime-local" id="departureTime" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="arrivalTime">Tahmini Varış (Opsiyonel)</label>
+                            <input type="datetime-local" id="arrivalTime">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="primary-button">Rotayı Başlat</button>
+                </form>
+            </div>
+
+            <div class="panel-card">
+                <div class="panel-header">
+                    <div>
+                        <span class="section-label">Aktif Operasyonlar</span>
+                        <h2>Mevcut Rotalar</h2>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Araç (Plaka)</th>
+                            <th>Güzergah</th>
+                            <th>Kalkış</th>
+                            <th>İşlem</th>
+                        </tr>
+                        </thead>
+                        <tbody id="routesTable">
+                        <tr><td colspan="5">Veriler yükleniyor...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </section>
