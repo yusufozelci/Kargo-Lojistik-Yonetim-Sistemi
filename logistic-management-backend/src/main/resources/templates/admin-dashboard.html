@@ -294,13 +294,19 @@
             <form id="createShipmentForm" class="form-block">
                 <div class="form-row">
                     <div class="input-group">
-                        <label for="senderSelect">Gönderici Müşteri</label>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
+                            <label for="senderSelect" style="margin-bottom: 0;">Gönderici Müşteri</label>
+                            <button type="button" onclick="openQuickCustomerModal()" style="background: none; border: none; color: var(--orange); font-size: 12px; font-weight: bold; cursor: pointer;">+ Yeni Ekle</button>
+                        </div>
                         <select id="senderSelect" required>
                             <option value="">Gönderici Seçin...</option>
                         </select>
                     </div>
                     <div class="input-group">
-                        <label for="receiverSelect">Alıcı Müşteri</label>
+                        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
+                            <label for="receiverSelect" style="margin-bottom: 0;">Alıcı Müşteri</label>
+                            <button type="button" onclick="openQuickCustomerModal()" style="background: none; border: none; color: var(--orange); font-size: 12px; font-weight: bold; cursor: pointer;">+ Yeni Ekle</button>
+                        </div>
                         <select id="receiverSelect" required>
                             <option value="">Alıcı Seçin...</option>
                         </select>
@@ -352,6 +358,55 @@
         <div class="modal-body">
             <ul id="trackingTimeline" class="timeline">
             </ul>
+        </div>
+    </div>
+</div>
+
+<div id="quickCustomerModal" class="modal-overlay hidden">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>Hızlı Kayıt: Müşteri ve Adres</h3>
+            <button type="button" id="closeCustomerModalBtn" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="quickCustomerForm" class="form-block">
+                <div class="input-group">
+                    <label>Ad Soyad</label>
+                    <input type="text" id="qcName" required>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Telefon</label>
+                        <input type="tel" id="qcPhone" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Müşteri Tipi</label>
+                        <select id="qcType" required>
+                            <option value="INDIVIDUAL">Bireysel</option>
+                            <option value="CORPORATE">Kurumsal</option>
+                        </select>
+                    </div>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid var(--border); margin: 10px 0;">
+
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Adres Başlığı (Örn: Ev, İş)</label>
+                        <input type="text" id="qcAddressTitle" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Şehir</label>
+                        <input type="text" id="qcCity" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Açık Adres</label>
+                    <input type="text" id="qcAddressText" required>
+                </div>
+
+                <button type="submit" class="primary-button" style="margin-top: 10px;">Kaydet ve Listeye Ekle</button>
+            </form>
         </div>
     </div>
 </div>

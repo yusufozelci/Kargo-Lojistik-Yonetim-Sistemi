@@ -589,7 +589,69 @@ document.addEventListener("DOMContentLoaded", () => {
                 const result = await response.json();
                 showMessage(`Kargo başarıyla oluşturuldu! Takip Kodu: ${result.trackingCode}`, "success");
                 createShipmentForm.reset();
-                await loadDashboardData(); // Listeyi yenile
+                await loadDashboardData();
+            } catch (error) {
+                showMessage(error.message, "error");
+            }
+        });
+    }
+
+
+    window.openQuickCustomerModal = function() {
+        document.getElementById("quickCustomerModal").classList.remove("hidden");
+    };
+
+    const closeCustomerModalBtn = document.getElementById("closeCustomerModalBtn");
+    if (closeCustomerModalBtn) {
+        closeCustomerModalBtn.addEventListener("click", () => {
+            document.getElementById("quickCustomerModal").classList.add("hidden");
+        });
+    }
+
+    const quickCustomerForm = document.getElementById("quickCustomerForm");
+    if (quickCustomerForm) {
+        quickCustomerForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            try {
+                const customerPayload = {
+                    fullName: document.getElementById("qcName").value,
+                    phone: document.getElementById("qcPhone").value,
+                    customerType: document.getElementById("qcType").value
+                };
+
+                const customerRes = await fetch("/api/customers", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(customerPayload)
+                });
+
+                if (!customerRes.ok) throw new Error("Müşteri kaydedilemedi.");
+                const newCustomer = await customerRes.json();
+
+                const addressPayload = {
+                    customerId: newCustomer.id,
+                    title: document.getElementById("qcAddressTitle").value,
+                    city: document.getElementById("qcCity").value,
+                    addressText: document.getElementById("qcAddressText").value
+                };
+
+                const addressRes = await fetch("/api/addresses", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(addressPayload)
+                });
+
+                if (!addressRes.ok) throw new Error("Müşteri kaydedildi ancak adres eklenemedi.");
+
+                showMessage("Müşteri ve adres başarıyla sisteme tanımlandı!", "success");
+
+                await Promise.all([loadCustomers(), loadAddresses()]);
+                populateShipmentDropdowns();
+
+                quickCustomerForm.reset();
+                document.getElementById("quickCustomerModal").classList.add("hidden");
+
             } catch (error) {
                 showMessage(error.message, "error");
             }
