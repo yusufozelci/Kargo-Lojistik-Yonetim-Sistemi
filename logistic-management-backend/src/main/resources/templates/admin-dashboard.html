@@ -26,6 +26,7 @@
             <button class="menu-item" data-section="usersSection">Kullanıcılar</button>
             <button class="menu-item" data-section="branchesSection">Şubeler</button>
             <button class="menu-item" data-section="routesSection">Rotalar ve Araçlar</button>
+            <button class="menu-item" data-section="createShipmentSection">Yeni Gönderi</button>
         </nav>
 
         <form th:action="@{/logout}" action="/logout" method="post">
@@ -277,6 +278,67 @@
                     </table>
                 </div>
             </div>
+        </div>
+    </section>
+
+    <section id="createShipmentSection" class="container content-section">
+        <div class="panel-card" style="max-width: 800px; margin: 0 auto;">
+            <div class="panel-header">
+                <div>
+                    <span class="section-label">Operasyon Merkezi</span>
+                    <h2>Yeni Kargo Kaydı</h2>
+                    <p>Gönderici, alıcı ve adres bilgilerini seçerek yeni bir gönderi oluşturun.</p>
+                </div>
+            </div>
+
+            <form id="createShipmentForm" class="form-block">
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="senderSelect">Gönderici Müşteri</label>
+                        <select id="senderSelect" required>
+                            <option value="">Gönderici Seçin...</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="receiverSelect">Alıcı Müşteri</label>
+                        <select id="receiverSelect" required>
+                            <option value="">Alıcı Seçin...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="originAddressSelect">Çıkış Adresi</label>
+                        <select id="originAddressSelect" required>
+                            <option value="">Adres Seçin...</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="destinationAddressSelect">Varış Adresi</label>
+                        <select id="destinationAddressSelect" required>
+                            <option value="">Adres Seçin...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="shipmentWeight">Ağırlık (kg)</label>
+                        <input type="number" id="shipmentWeight" step="0.1" min="0.1" placeholder="Örn: 2.5" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="shipmentDistance">Mesafe (km)</label>
+                        <input type="number" id="shipmentDistance" step="1" min="1" placeholder="Örn: 450" required>
+                    </div>
+                </div>
+
+                <div style="margin-top: 10px; padding: 15px; background: rgba(255,107,0,0.05); border-radius: 8px; border: 1px dashed var(--orange);">
+                    <p style="font-size: 13px; color: var(--muted);">* Fiyatlandırma, girdiğiniz ağırlık ve mesafe üzerinden sistem tarafından otomatik hesaplanacaktır.</p>
+                </div>
+
+                <button type="submit" class="primary-button">Kargoyu Kaydet ve Takip Kodu Üret</button>
+            </form>
         </div>
     </section>
 </main>

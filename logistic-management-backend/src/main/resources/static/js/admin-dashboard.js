@@ -10,6 +10,7 @@ document.addEventListener("DOMContentLoaded", () => {
     let branches = [];
     let vehicles = [];
     let routes = [];
+    let addresses = [];
 
     menuItems.forEach(item => {
         item.addEventListener("click", () => {
@@ -38,7 +39,8 @@ document.addEventListener("DOMContentLoaded", () => {
             loadUsers(),
             loadBranches(),
             loadVehicles(),
-            loadRoutes()
+            loadRoutes(),
+            loadAddresses()
         ]);
 
         updateStats();
@@ -49,6 +51,14 @@ document.addEventListener("DOMContentLoaded", () => {
         renderBranchesTable();
         populateRouteDropdowns();
         renderRoutesTable();
+        populateShipmentDropdowns();
+    }
+
+    async function loadAddresses() {
+        try {
+            const response = await fetch("/api/addresses");
+            if (response.ok) addresses = await response.json();
+        } catch { addresses = []; }
     }
 
     async function loadShipments() {
@@ -529,6 +539,59 @@ document.addEventListener("DOMContentLoaded", () => {
         trackingModal.addEventListener("click", (e) => {
             if (e.target === trackingModal) {
                 trackingModal.classList.add("hidden");
+            }
+        });
+    }
+
+    function populateShipmentDropdowns() {
+        const senderSelect = document.getElementById("senderSelect");
+        const receiverSelect = document.getElementById("receiverSelect");
+        const originSelect = document.getElementById("originAddressSelect");
+        const destSelect = document.getElementById("destinationAddressSelect");
+
+        if (!senderSelect) return;
+
+        const customerOptions = `<option value="">Seçiniz...</option>` +
+            customers.map(c => `<option value="${c.id}">${c.fullName} (${c.phone})</option>`).join("");
+
+        const addressOptions = `<option value="">Seçiniz...</option>` +
+            addresses.map(a => `<option value="${a.id}">${a.title} - ${a.city} (${a.customerName})</option>`).join("");
+
+        senderSelect.innerHTML = customerOptions;
+        receiverSelect.innerHTML = customerOptions;
+        originSelect.innerHTML = addressOptions;
+        destSelect.innerHTML = addressOptions;
+    }
+
+    const createShipmentForm = document.getElementById("createShipmentForm");
+    if (createShipmentForm) {
+        createShipmentForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const payload = {
+                senderId: document.getElementById("senderSelect").value,
+                receiverId: document.getElementById("receiverSelect").value,
+                originAddressId: document.getElementById("originAddressSelect").value,
+                destinationAddressId: document.getElementById("destinationAddressSelect").value,
+                weight: parseFloat(document.getElementById("shipmentWeight").value),
+                distance: parseFloat(document.getElementById("shipmentDistance").value)
+            };
+
+            try {
+                const response = await fetch("/api/shipments/ekle", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) throw new Error("Kargo oluşturulamadı. Lütfen verileri kontrol edin.");
+
+                const result = await response.json();
+                showMessage(`Kargo başarıyla oluşturuldu! Takip Kodu: ${result.trackingCode}`, "success");
+                createShipmentForm.reset();
+                await loadDashboardData(); // Listeyi yenile
+            } catch (error) {
+                showMessage(error.message, "error");
             }
         });
     }
