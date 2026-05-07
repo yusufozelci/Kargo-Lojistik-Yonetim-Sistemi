@@ -1,6 +1,7 @@
 package com.cargo.logistic_management.config;
 
 import com.cargo.logistic_management.security.CustomUserDetailsService;
+import com.cargo.logistic_management.security.JwtAuthenticationFilter;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -17,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableWebSecurity
@@ -25,6 +27,7 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
     private final CustomUserDetailsService userDetailsService;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -32,6 +35,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(auth -> auth
+                        // 1. ADIM: Herkese açık olan yollar
                         .requestMatchers(
                                 "/",
                                 "/tracking",
@@ -41,7 +45,9 @@ public class SecurityConfig {
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",
-                                "/error"
+                                "/error",
+                                "/api/users/login",
+                                "/api/users/register"
                         ).permitAll()
 
                         .requestMatchers("/admin-dashboard/**").hasRole("ADMIN")
@@ -53,14 +59,16 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/api/shipments/**",
                                 "/api/customers/**",
-                                "/api/users/**",
                                 "/api/branches/**",
                                 "/api/routes/**",
-                                "/api/addresses/**"
+                                "/api/addresses/**",
+                                "/api/users/**"
                         ).authenticated()
 
                         .anyRequest().authenticated()
                 )
+
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
 
                 .formLogin(form -> form
                         .loginPage("/login")
@@ -79,6 +87,13 @@ public class SecurityConfig {
                 )
 
                 .exceptionHandling(exception -> exception
+                        .authenticationEntryPoint((request, response, authException) -> {
+                            if (request.getRequestURI().startsWith("/api/")) {
+                                response.sendError(jakarta.servlet.http.HttpServletResponse.SC_UNAUTHORIZED, "Yetkisiz Erişim - Token Gerekli");
+                            } else {
+                                response.sendRedirect("/login");
+                            }
+                        })
                         .accessDeniedPage("/login?unauthorized=true")
                 )
 
