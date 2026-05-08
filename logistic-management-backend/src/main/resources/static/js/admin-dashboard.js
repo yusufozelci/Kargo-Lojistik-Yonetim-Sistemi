@@ -548,19 +548,21 @@ document.addEventListener("DOMContentLoaded", () => {
         const receiverSelect = document.getElementById("receiverSelect");
         const originSelect = document.getElementById("originAddressSelect");
         const destSelect = document.getElementById("destinationAddressSelect");
-
-        if (!senderSelect) return;
-
-        const customerOptions = `<option value="">Seçiniz...</option>` +
-            customers.map(c => `<option value="${c.id}">${c.fullName} (${c.phone})</option>`).join("");
+        const branchAddressSelect = document.getElementById("branchAddressId"); // YENİ
 
         const addressOptions = `<option value="">Seçiniz...</option>` +
-            addresses.map(a => `<option value="${a.id}">${a.title} - ${a.city} (${a.customerName})</option>`).join("");
+            addresses.map(a => `<option value="${a.id}">${a.title} - ${a.city}</option>`).join("");
 
-        senderSelect.innerHTML = customerOptions;
-        receiverSelect.innerHTML = customerOptions;
-        originSelect.innerHTML = addressOptions;
-        destSelect.innerHTML = addressOptions;
+        if (senderSelect) {
+            const customerOptions = `<option value="">Seçiniz...</option>` +
+                customers.map(c => `<option value="${c.id}">${c.fullName} (${c.phone})</option>`).join("");
+            senderSelect.innerHTML = customerOptions;
+            receiverSelect.innerHTML = customerOptions;
+        }
+
+        if (originSelect) originSelect.innerHTML = addressOptions;
+        if (destSelect) destSelect.innerHTML = addressOptions;
+        if (branchAddressSelect) branchAddressSelect.innerHTML = addressOptions; // YENİ
     }
 
     const createShipmentForm = document.getElementById("createShipmentForm");
@@ -651,6 +653,75 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 quickCustomerForm.reset();
                 document.getElementById("quickCustomerModal").classList.add("hidden");
+
+            } catch (error) {
+                showMessage(error.message, "error");
+            }
+        });
+    }
+
+
+    window.openCreateBranchModal = function() {
+        document.getElementById("createBranchModal").classList.remove("hidden");
+    };
+    
+
+    window.openCreateBranchModal = function() {
+        document.getElementById("createBranchModal").classList.remove("hidden");
+    };
+
+    const closeBranchModalBtn = document.getElementById("closeBranchModalBtn");
+    if (closeBranchModalBtn) {
+        closeBranchModalBtn.addEventListener("click", () => {
+            document.getElementById("createBranchModal").classList.add("hidden");
+        });
+    }
+
+    const createBranchForm = document.getElementById("createBranchForm");
+    if (createBranchForm) {
+        createBranchForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            try {
+                const addressPayload = {
+                    title: document.getElementById("branchName").value + " Merkezi",
+                    city: document.getElementById("branchCity").value,
+                    addressText: document.getElementById("branchAddressText").value
+                };
+
+                const addressRes = await fetch("/api/addresses", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(addressPayload)
+                });
+
+                if (!addressRes.ok) throw new Error("Şubenin fiziksel adresi kaydedilemedi.");
+                const savedAddress = await addressRes.json();
+
+
+                const branchPayload = {
+                    name: document.getElementById("branchName").value,
+                    cityName: document.getElementById("branchCity").value,
+                    isTransferCenter: document.getElementById("isTransferCenter").value === "true",
+                    addressId: savedAddress.id
+                };
+
+                const branchRes = await fetch("/api/branches", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(branchPayload)
+                });
+
+                if (!branchRes.ok) throw new Error("Şube adresi eklendi ancak şube kaydı başarısız oldu.");
+
+                showMessage("Yeni şube ve adresi başarıyla sisteme eklendi!", "success");
+
+                await loadBranches();
+                renderBranchesTable();
+                populateRouteDropdowns();
+
+                createBranchForm.reset();
+                document.getElementById("createBranchModal").classList.add("hidden");
 
             } catch (error) {
                 showMessage(error.message, "error");

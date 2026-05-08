@@ -180,12 +180,12 @@
 
     <section id="branchesSection" class="container content-section">
         <div class="panel-card">
-            <div class="panel-header">
+            <div class="panel-header panel-header-flex">
                 <div>
-                    <span class="section-label">Şubeler</span>
-                    <h2>Sistemdeki şube kayıtları</h2>
-                    <p>NovaKargo şubelerini ve aktarma merkezlerini görüntüleyin.</p>
+                    <span class="section-label">Fiziksel Ağ</span>
+                    <h2>Şubeler ve Aktarma Merkezleri</h2>
                 </div>
+                <button class="primary-button btn-small" onclick="openCreateBranchModal()">+ Yeni Şube Ekle</button>
             </div>
 
             <div class="table-wrapper">
@@ -406,6 +406,42 @@
                 </div>
 
                 <button type="submit" class="primary-button" style="margin-top: 10px;">Kaydet ve Listeye Ekle</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="createBranchModal" class="modal-overlay hidden">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>Yeni Şube / Aktarma Merkezi Ekle</h3>
+            <button type="button" id="closeBranchModalBtn" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="createBranchForm" class="form-block">
+                <div class="input-group">
+                    <label for="branchName">Şube Adı</label>
+                    <input type="text" id="branchName" placeholder="Örn: Kadıköy Şube" required>
+                </div>
+                <div class="input-group">
+                    <label for="branchCity">Bulunduğu Şehir</label>
+                    <input type="text" id="branchCity" placeholder="Örn: İstanbul" required>
+                </div>
+                <div class="input-group">
+                    <label for="branchAddressText">Şube Açık Adresi</label>
+                    <input type="text" id="branchAddressText" placeholder="Örn: Caferağa Mah. Moda Cad. No:12" required>
+                </div>
+                <div class="input-group">
+                    <label for="isTransferCenter">Şube Tipi</label>
+                    <select id="isTransferCenter" required>
+                        <option value="false">Normal Şube</option>
+                        <option value="true">Aktarma Merkezi (Transfer Hub)</option>
+                    </select>
+                </div>
+                <div class="info-box">
+                    <p class="info-text">* Aktarma merkezleri, rotalar arası kargo transferi için kullanılır.</p>
+                </div>
+                <button type="submit" class="primary-button" style="margin-top: 15px;">Şubeyi Kaydet</button>
             </form>
         </div>
     </div>
