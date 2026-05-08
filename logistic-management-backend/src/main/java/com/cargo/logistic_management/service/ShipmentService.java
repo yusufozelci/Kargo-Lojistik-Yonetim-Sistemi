@@ -31,6 +31,13 @@ public class ShipmentService {
                 .collect(Collectors.toList());
     }
 
+    public List<ShipmentResponseDto> kullaniciKargolariniGetir(String telefon) {
+        return shipmentRepository.findAllBySenderPhoneOrReceiverPhone(telefon, telefon)
+                .stream()
+                .map(this::convertToResponseDto)
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     public ShipmentResponseDto kargoKaydet(ShipmentRequestDto dto) {
         Shipment shipment = new Shipment();

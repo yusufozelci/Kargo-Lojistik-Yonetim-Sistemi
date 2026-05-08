@@ -21,7 +21,6 @@
             <a th:href="@{/}" >Ana Sayfa</a>
             <a href="#trackingPanel">Kargo Takip</a>
             <a href="#pricingPanel">Ücret Hesaplama</a>
-            <a href="#branchesPanel">Şubeler</a>
         </nav>
 
         <div class="header-actions">
@@ -50,6 +49,50 @@
                 <span th:text="${email}">kullanici@mail.com</span>
                 <small>Müşteri işlem ekranı</small>
             </div>
+        </div>
+    </section>
+
+    <section class="container panel-card" style="margin-bottom: 2rem;">
+        <div class="panel-head">
+            <div>
+                <span>Kayıtlar</span>
+                <h2>Benim Kargolarım</h2>
+            </div>
+            <div class="round-icon">📦</div>
+        </div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>Takip Kodu</th>
+                    <th>Gönderici</th>
+                    <th>Alıcı</th>
+                    <th>Durum</th>
+                    <th>Ücret</th>
+                    <th>İşlem</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="shipment : ${myShipments}">
+                    <td th:text="${shipment.trackingCode}">TRK-123</td>
+                    <td th:text="${shipment.senderName}">Ali Veli</td>
+                    <td th:text="${shipment.receiverName}">Ayşe Fatma</td>
+                    <td>
+                        <span th:class="'status-badge status-' + ${shipment.status.toString().toLowerCase()}"
+                              th:text="${shipment.status}">Yolda</span>
+                    </td>
+                    <td th:text="${'₺' + shipment.totalPrice}">₺0.0</td>
+                    <td>
+                        <a th:href="@{/user-dashboard/tracking(trackingNumber=${shipment.trackingCode})}"
+                           class="btn-small">Detay/Takip</a>
+                    </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(myShipments)}">
+                    <td colspan="6">Henüz bir kargo kaydınız bulunmuyor.</td>
+                </tr>
+                </tbody>
+            </table>
         </div>
     </section>
 
@@ -107,6 +150,15 @@
                         <strong th:text="${userShipment.totalPrice != null ? #numbers.formatDecimal(userShipment.totalPrice, 1, 2) + ' TL' : '-'}">-</strong>
                     </div>
                 </div>
+
+                <input type="hidden" id="currentTrackingCode" th:value="${userShipment.trackingCode}" />
+                <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
+                    <h3 style="font-size: 16px; margin-bottom: 15px;">Kargo Hareketleri</h3>
+                    <div id="trackingTimelineContainer" class="timeline-wrapper">
+                        <p style="color: #64748b; font-size: 14px;">Kargo geçmişi yükleniyor...</p>
+                    </div>
+                </div>
+
             </div>
         </article>
 
@@ -146,45 +198,6 @@
             </div>
         </article>
     </section>
-
-    <section class="container panel-card branches-card" id="branchesPanel">
-        <div class="panel-head">
-            <div>
-                <span>Şubeler</span>
-                <h2>Kayıtlı NovaKargo şubeleri</h2>
-            </div>
-            <div class="round-icon">⌂</div>
-        </div>
-
-        <p class="card-desc">Sistemde kayıtlı şube bilgilerini buradan görüntüleyebilirsiniz.</p>
-
-        <div class="table-wrapper">
-            <table>
-                <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Şube Adı</th>
-                    <th>Şehir</th>
-                    <th>Aktarma Merkezi</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:if="${branches == null || branches.isEmpty()}">
-                    <td colspan="4">Henüz kayıtlı şube bulunmuyor.</td>
-                </tr>
-                <tr th:each="branch : ${branches}">
-                    <td th:text="${branch.id}">1</td>
-                    <td th:text="${branch.name}">Merkez Şube</td>
-                    <td th:text="${branch.cityName}">Samsun</td>
-                    <td>
-                        <span th:if="${branch.isTransferCenter}" class="status-badge status-transit">Evet</span>
-                        <span th:unless="${branch.isTransferCenter}" class="status-badge status-pending">Hayır</span>
-                    </td>
-                </tr>
-                </tbody>
-            </table>
-        </div>
-    </section>
 </main>
 
 <footer class="footer">
@@ -193,6 +206,54 @@
         <span>Kullanıcı Paneli</span>
     </div>
 </footer>
+
+<script>
+    document.addEventListener("DOMContentLoaded", async () => {
+        const trackingCodeInput = document.getElementById("currentTrackingCode");
+        if (trackingCodeInput) {
+            const trackingCode = trackingCodeInput.value;
+            const timelineContainer = document.getElementById("trackingTimelineContainer");
+            try {
+                const response = await fetch(`/api/tracking/${trackingCode}`);
+                if (!response.ok) throw new Error("Takip geçmişi alınamadı.");
+
+                const history = await response.json();
+
+                if (history.length === 0) {
+                    timelineContainer.innerHTML = "<p>Bu kargo için henüz bir hareket kaydı bulunmuyor.</p>";
+                    return;
+                }
+
+                let html = '<div class="timeline">';
+                history.forEach(log => {
+                    const dateObj = new Date(log.dateTime);
+                    const date = dateObj.toLocaleDateString('tr-TR') + ' - ' + dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+
+                    const statusMap = {
+                        'PENDING': 'Beklemede',
+                        'IN_TRANSIT': 'Yolda',
+                        'DELIVERED': 'Teslim Edildi',
+                        'CANCELLED': 'İptal Edildi'
+                    };
+                    const trStatus = statusMap[log.status] || log.status;
+
+                    html += `<div class="timeline-item">
+                            <div class="timeline-icon"></div>
+                            <div class="timeline-content">
+                                <div class="timeline-date">🕒 ${date}</div>
+                                <div class="timeline-status">${trStatus}</div>
+                                <div class="timeline-desc">${log.description}</div>
+                            </div>
+                         </div>`;
+                });
+                timelineContainer.innerHTML = html + '</div>';
+
+            } catch (e) {
+                timelineContainer.innerHTML = `<p style="color:red;">Hata: ${e.message}</p>`;
+            }
+        }
+    });
+</script>
 
 </body>
 </html>

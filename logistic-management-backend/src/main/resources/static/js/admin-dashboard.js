@@ -857,7 +857,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     });
 
-    // --- ARAÇ EKLEME İŞLEMLERİ ---
 
     window.openCreateVehicleModal = function() {
         document.getElementById("createVehicleModal").classList.remove("hidden");
@@ -903,4 +902,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+
 });
