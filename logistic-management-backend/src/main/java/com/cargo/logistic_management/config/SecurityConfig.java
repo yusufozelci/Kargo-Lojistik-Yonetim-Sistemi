@@ -55,6 +55,7 @@ public class SecurityConfig {
 
                         .requestMatchers("/user-dashboard/**").authenticated()
                         .requestMatchers("/user/**").authenticated()
+                        .requestMatchers("/api/courier/**").hasAuthority("ROLE_COURIER")
 
                         .requestMatchers(
                                 "/api/shipments/**",
