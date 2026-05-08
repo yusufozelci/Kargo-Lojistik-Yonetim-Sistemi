@@ -210,11 +210,12 @@
     <section id="routesSection" class="container content-section">
         <div class="panel-grid">
             <div class="panel-card">
-                <div class="panel-header">
+                <div class="panel-header panel-header-flex">
                     <div>
                         <span class="section-label">Yeni Operasyon</span>
                         <h2>Rota Oluştur</h2>
                     </div>
+                    <button class="primary-button btn-small" onclick="openCreateVehicleModal()">+ Yeni Araç Ekle</button>
                 </div>
 
                 <form id="createRouteForm" class="form-block">
@@ -443,6 +444,63 @@
                     <p class="info-text">* Aktarma merkezleri, rotalar arası kargo transferi için kullanılır.</p>
                 </div>
                 <button type="submit" class="primary-button" style="margin-top: 15px;">Şubeyi Kaydet</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="loadShipmentModal" class="modal-overlay hidden">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>Araca Kargo Yükle (Rota: #<span id="targetRouteId"></span>)</h3>
+            <button type="button" id="closeLoadModalBtn" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="loadShipmentForm" class="form-block">
+                <input type="hidden" id="hiddenRouteId">
+                <div class="input-group">
+                    <label for="pendingShipmentSelect">Bekleyen Kargolar</label>
+                    <select id="pendingShipmentSelect" required>
+                        <option value="">Kargo Seçin...</option>
+                    </select>
+                </div>
+                <div class="info-box" style="background: rgba(37, 99, 235, 0.1); border: 1px dashed var(--orange); margin-bottom: 15px;">
+                    <p class="info-text" style="color: var(--navy); font-weight: bold;">
+                        * Yükleme yapıldığında kargo durumu otomatik olarak "Yolda" olarak güncellenecektir.
+                    </p>
+                </div>
+                <button type="submit" class="primary-button">Kargoyu Araca Bindir</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="createVehicleModal" class="modal-overlay hidden">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>Yeni Araç Kaydı</h3>
+            <button type="button" id="closeVehicleModalBtn" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="createVehicleForm" class="form-block">
+                <div class="input-group">
+                    <label for="plateNumber">Plaka Numarası</label>
+                    <input type="text" id="plateNumber" placeholder="Örn: 34 ABC 123" required>
+                </div>
+                <div class="input-group">
+                    <label for="vehicleType">Araç Tipi</label>
+                    <select id="vehicleType" required>
+                        <option value="TIR">TIR (Ağır Vasıta)</option>
+                        <option value="KAMYON">Kamyon</option>
+                        <option value="KAMYONET">Kamyonet</option>
+                        <option value="MINIVAN">Minivan</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="capacity">Kapasite (kg)</label>
+                    <input type="number" id="capacity" placeholder="Örn: 5000" required>
+                </div>
+                <button type="submit" class="primary-button" style="margin-top: 15px;">Aracı Kaydet</button>
             </form>
         </div>
     </div>

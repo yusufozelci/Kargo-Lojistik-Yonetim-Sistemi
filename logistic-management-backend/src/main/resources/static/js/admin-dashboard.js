@@ -430,7 +430,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${route.vehicle ? route.vehicle.plateNumber : "-"}</td>
                 <td>${route.departureBranch ? route.departureBranch.name : "-"} ➔ ${route.arrivalBranch ? route.arrivalBranch.name : "-"}</td>
                 <td>${new Date(route.departureTime).toLocaleString('tr-TR')}</td>
-                <td><button class="secondary-button" style="height:32px; padding:0 10px; font-size:12px;" onclick="alert('Kargo yükleme modülü eklenecek')">+ Kargo Yükle</button></td>
+                <td><button class="btn-small" onclick="openLoadShipmentModal(${route.id})">Kargo Yükle</button></td>
             </tr>
         `).join("");
     }
@@ -799,7 +799,7 @@ document.addEventListener("DOMContentLoaded", () => {
             }
 
             showMessage("Müşteri başarıyla silindi.", "success");
-            
+
             await loadCustomers();
             renderCustomersTable();
             populateShipmentDropdowns();
@@ -808,4 +808,99 @@ document.addEventListener("DOMContentLoaded", () => {
             showMessage(error.message, "error");
         }
     };
+
+
+    window.openLoadShipmentModal = function(routeId) {
+        document.getElementById("targetRouteId").innerText = routeId;
+        document.getElementById("hiddenRouteId").value = routeId;
+
+        const pendingShipments = shipments.filter(s => s.status === "PENDING");
+        const select = document.getElementById("pendingShipmentSelect");
+
+        select.innerHTML = '<option value="">Yüklenecek Kargoyu Seçin...</option>';
+        pendingShipments.forEach(s => {
+            select.innerHTML += `<option value="${s.id}">${s.trackingCode} - (${s.senderName} -> ${s.receiverName})</option>`;
+        });
+
+        document.getElementById("loadShipmentModal").classList.remove("hidden");
+    };
+
+    document.getElementById("closeLoadModalBtn").addEventListener("click", () => {
+        document.getElementById("loadShipmentModal").classList.add("hidden");
+    });
+
+    document.getElementById("loadShipmentForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const routeId = document.getElementById("hiddenRouteId").value;
+        const shipmentId = document.getElementById("pendingShipmentSelect").value;
+
+        try {
+            const response = await fetch(`/api/routes/${routeId}/load-shipment/${shipmentId}`, {
+                method: "POST"
+            });
+
+            if (!response.ok) {
+                const error = await response.text();
+                throw new Error(error || "Yükleme başarısız oldu.");
+            }
+
+            showMessage("Kargo başarıyla yüklendi ve yola çıktı!", "success");
+
+            await loadShipments();
+            await loadRoutes();
+            renderShipmentsTable();
+            renderRoutesTable();
+
+            document.getElementById("loadShipmentModal").classList.add("hidden");
+        } catch (error) {
+            showMessage(error.message, "error");
+        }
+    });
+
+    // --- ARAÇ EKLEME İŞLEMLERİ ---
+
+    window.openCreateVehicleModal = function() {
+        document.getElementById("createVehicleModal").classList.remove("hidden");
+    };
+
+    const closeVehicleModalBtn = document.getElementById("closeVehicleModalBtn");
+    if (closeVehicleModalBtn) {
+        closeVehicleModalBtn.addEventListener("click", () => {
+            document.getElementById("createVehicleModal").classList.add("hidden");
+        });
+    }
+
+    const createVehicleForm = document.getElementById("createVehicleForm");
+    if (createVehicleForm) {
+        createVehicleForm.addEventListener("submit", async (e) => {
+            e.preventDefault();
+
+            const payload = {
+                plateNumber: document.getElementById("plateNumber").value,
+                vehicleType: document.getElementById("vehicleType").value,
+                capacity: parseFloat(document.getElementById("capacity").value)
+            };
+
+            try {
+                const res = await fetch("/api/vehicles", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!res.ok) throw new Error("Araç kaydedilemedi.");
+
+                showMessage("Yeni araç başarıyla filoya eklendi!", "success");
+
+                await loadVehicles();
+                populateRouteDropdowns();
+
+                createVehicleForm.reset();
+                document.getElementById("createVehicleModal").classList.add("hidden");
+
+            } catch (error) {
+                showMessage(error.message, "error");
+            }
+        });
+    }
 });
