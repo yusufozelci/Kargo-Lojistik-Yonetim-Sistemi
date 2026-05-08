@@ -1,18 +1,81 @@
-const params = new URLSearchParams(window.location.search);
+window.showForgotPasswordForm = function() {
+    document.getElementById('loginForm').classList.add('hidden');
+    document.getElementById('resetPasswordForm').classList.add('hidden');
+    document.getElementById('forgotPasswordForm').classList.remove('hidden');
+};
 
-const errorAlert = document.getElementById("errorAlert");
-const logoutAlert = document.getElementById("logoutAlert");
+window.showLoginForm = function() {
+    document.getElementById('forgotPasswordForm').classList.add('hidden');
+    document.getElementById('resetPasswordForm').classList.add('hidden');
+    document.getElementById('loginForm').classList.remove('hidden');
+};
 
-if (params.get("error") === "true") {
-    errorAlert.textContent = "E-posta veya şifre hatalı. Lütfen tekrar dene.";
-    errorAlert.style.display = "block";
+let userEmailForReset = "";
+
+
+const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+if (forgotPasswordForm) {
+    forgotPasswordForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('forgotEmail').value;
+        const alertBox = document.getElementById('forgotAlert');
+        const btn = document.getElementById('forgotSubmitBtn');
+
+        btn.textContent = "Gönderiliyor...";
+        btn.disabled = true;
+
+        try {
+            const response = await fetch(`/api/users/forgot-password?email=${encodeURIComponent(email)}`, {
+                method: 'POST'
+            });
+            const resultText = await response.text();
+
+            if (!response.ok) throw new Error(resultText || "Bir hata oluştu.");
+
+
+            userEmailForReset = email;
+            document.getElementById('forgotPasswordForm').classList.add('hidden');
+            document.getElementById('resetPasswordForm').classList.remove('hidden');
+
+            const resetAlert = document.getElementById('resetAlert');
+            resetAlert.className = "alert alert-success";
+            resetAlert.textContent = "Doğrulama kodu e-posta adresinize gönderildi.";
+            resetAlert.classList.remove('hidden');
+
+        } catch (error) {
+            alertBox.className = "alert alert-error";
+            alertBox.textContent = error.message;
+            alertBox.classList.remove('hidden');
+        } finally {
+            btn.textContent = "Doğrulama Kodu Gönder";
+            btn.disabled = false;
+        }
+    });
 }
 
-if (params.has("unauthorized")) {
-    errorAlert.textContent = "Bu panele sadece admin kullanıcıları giriş yapabilir.";
-    errorAlert.style.display = "block";
-}
+const resetPasswordForm = document.getElementById('resetPasswordForm');
+if (resetPasswordForm) {
+    resetPasswordForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const otp = document.getElementById('resetOtp').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const alertBox = document.getElementById('resetAlert');
 
-if (params.has("logout")) {
-    logoutAlert.style.display = "block";
+        try {
+            const response = await fetch(`/api/users/reset-password?email=${encodeURIComponent(userEmailForReset)}&otp=${encodeURIComponent(otp)}&newPassword=${encodeURIComponent(newPassword)}`, {
+                method: 'POST'
+            });
+            const resultText = await response.text();
+
+            if (!response.ok) throw new Error(resultText || "Şifre güncellenemedi.");
+
+            alert("Şifreniz başarıyla güncellendi! Giriş yapabilirsiniz.");
+            window.location.href = "/login";
+
+        } catch (error) {
+            alertBox.className = "alert alert-error";
+            alertBox.textContent = error.message;
+            alertBox.classList.remove('hidden');
+        }
+    });
 }

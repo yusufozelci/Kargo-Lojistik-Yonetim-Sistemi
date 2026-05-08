@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" th:href="@{/css/login.css}">
     <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <script th:src="@{/js/login.js}" defer></script>
     <script th:src="@{/js/theme.js}" defer></script>
 </head>
 <body>
@@ -27,28 +28,16 @@
 
 <main class="auth-page">
     <section class="auth-panel">
-        <form class="auth-card" th:action="@{/login}" method="post">
+        <form id="loginForm" class="auth-card" th:action="@{/login}" method="post">
             <div class="form-head">
                 <span>Giriş Paneli</span>
                 <h2>Giriş Yap</h2>
                 <p>E-posta ve şifrenizle sisteme giriş yapın.</p>
             </div>
 
-            <div th:if="${param.error}" class="alert alert-error">
-                E-posta veya şifre hatalı. Lütfen tekrar deneyin.
-            </div>
-
-            <div th:if="${param.registered}" class="alert alert-success">
-                Kayıt işlemi başarılı. Şimdi hesabınızla giriş yapabilirsiniz.
-            </div>
-
-            <div th:if="${param.unauthorized}" class="alert alert-error">
-                Bu sayfaya erişim yetkiniz yok. Lütfen yetkili bir hesapla giriş yapın.
-            </div>
-
-            <div th:if="${param.logout}" class="alert alert-success">
-                Başarıyla çıkış yaptınız.
-            </div>
+            <div th:if="${param.error}" class="alert alert-error">E-posta veya şifre hatalı. Lütfen tekrar deneyin.</div>
+            <div th:if="${param.registered}" class="alert alert-success">Kayıt işlemi başarılı. Şimdi giriş yapabilirsiniz.</div>
+            <div th:if="${param.logout}" class="alert alert-success">Başarıyla çıkış yaptınız.</div>
 
             <div class="input-group">
                 <label for="email">E-posta</label>
@@ -60,12 +49,59 @@
                 <input type="password" id="password" name="password" placeholder="••••••••" autocomplete="current-password" required>
             </div>
 
+            <div style="text-align: right; margin-bottom: 16px;">
+                <button type="button" onclick="showForgotPasswordForm()" style="background:none; border:none; color:var(--orange); font-size:13px; font-weight:bold; cursor:pointer;">Şifremi Unuttum</button>
+            </div>
+
             <button type="submit" class="primary-button">Giriş Yap</button>
 
             <p class="helper-text">
                 Hesabınız yok mu?
                 <a th:href="@{/register}">Kayıt olun</a>
             </p>
+        </form>
+
+        <form id="forgotPasswordForm" class="auth-card hidden">
+            <div class="form-head">
+                <span>Şifre Kurtarma</span>
+                <h2>Şifremi Unuttum</h2>
+                <p>Kayıtlı e-posta adresinizi girin, size bir doğrulama kodu (OTP) gönderelim.</p>
+            </div>
+
+            <div id="forgotAlert" class="alert hidden"></div>
+
+            <div class="input-group">
+                <label for="forgotEmail">E-posta Adresiniz</label>
+                <input type="email" id="forgotEmail" placeholder="ornek@mail.com" required>
+            </div>
+
+            <button type="submit" class="primary-button" id="forgotSubmitBtn">Doğrulama Kodu Gönder</button>
+
+            <p class="helper-text">
+                <button type="button" onclick="showLoginForm()" style="background:none; border:none; color:var(--orange); font-weight:900; cursor:pointer;">← Giriş ekranına dön</button>
+            </p>
+        </form>
+
+        <form id="resetPasswordForm" class="auth-card hidden">
+            <div class="form-head">
+                <span>Yeni Şifre Belirleme</span>
+                <h2>Şifreyi Yenile</h2>
+                <p>E-postanıza gelen 6 haneli kodu ve yeni şifrenizi girin.</p>
+            </div>
+
+            <div id="resetAlert" class="alert hidden"></div>
+
+            <div class="input-group">
+                <label for="resetOtp">Doğrulama Kodu (OTP)</label>
+                <input type="text" id="resetOtp" placeholder="Örn: 123456" required>
+            </div>
+
+            <div class="input-group">
+                <label for="newPassword">Yeni Şifre</label>
+                <input type="password" id="newPassword" placeholder="En az 6 karakter" required>
+            </div>
+
+            <button type="submit" class="primary-button">Şifremi Güncelle</button>
         </form>
     </section>
 </main>

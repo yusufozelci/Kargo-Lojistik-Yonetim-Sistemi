@@ -25,7 +25,7 @@ public class EmailService {
 
     public void sendPasswordChangeNotification(String toEmail) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setFrom("noreply@novakargo.com");
+        message.setFrom("yusufozelci2005@gmail.com");
         message.setTo(toEmail);
         message.setSubject("NovaKargo | Güvenlik Uyarısı: Şifreniz Değiştirildi");
         message.setText("Merhaba,\n\n"

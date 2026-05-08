@@ -204,6 +204,10 @@ body {
     text-decoration:none;
 }
 
+.hidden {
+    display: none !important;
+}
+
 @media (max-width:560px) {
     .site-header,.header-inner{height:auto;}
     .header-inner{padding:12px 0;}
