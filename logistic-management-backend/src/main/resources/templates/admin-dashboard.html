@@ -25,6 +25,8 @@
             <button class="menu-item" data-section="customersSection">Kargo Müşterileri</button>
             <button class="menu-item" data-section="usersSection">Kullanıcılar</button>
             <button class="menu-item" data-section="branchesSection">Şubeler</button>
+            <button class="menu-item" data-section="routesSection">Rotalar ve Araçlar</button>
+            <button class="menu-item" data-section="createShipmentSection">Yeni Gönderi</button>
         </nav>
 
         <form th:action="@{/logout}" action="/logout" method="post">
@@ -136,7 +138,7 @@
                         <th>Ad Soyad</th>
                         <th>Telefon</th>
                         <th>Tip</th>
-                    </tr>
+                        <th>İşlem</th> </tr>
                     </thead>
                     <tbody id="customersTable">
                     <tr><td colspan="4">Veriler yükleniyor...</td></tr>
@@ -166,7 +168,7 @@
                         <th>Telefon</th>
                         <th>Rol</th>
                         <th>Durum</th>
-                    </tr>
+                        <th>İşlem</th> </tr>
                     </thead>
                     <tbody id="usersTable">
                     <tr><td colspan="6">Veriler yükleniyor...</td></tr>
@@ -178,12 +180,12 @@
 
     <section id="branchesSection" class="container content-section">
         <div class="panel-card">
-            <div class="panel-header">
+            <div class="panel-header panel-header-flex">
                 <div>
-                    <span class="section-label">Şubeler</span>
-                    <h2>Sistemdeki şube kayıtları</h2>
-                    <p>NovaKargo şubelerini ve aktarma merkezlerini görüntüleyin.</p>
+                    <span class="section-label">Fiziksel Ağ</span>
+                    <h2>Şubeler ve Aktarma Merkezleri</h2>
                 </div>
+                <button class="primary-button btn-small" onclick="openCreateBranchModal()">+ Yeni Şube Ekle</button>
             </div>
 
             <div class="table-wrapper">
@@ -194,16 +196,315 @@
                         <th>Şube Adı</th>
                         <th>Şehir</th>
                         <th>Aktarma Merkezi</th>
-                    </tr>
+                        <th>İşlem</th> </tr>
                     </thead>
                     <tbody id="branchesTable">
+                    </tbody>
                     <tr><td colspan="4">Veriler yükleniyor...</td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </section>
+
+    <section id="routesSection" class="container content-section">
+        <div class="panel-grid">
+            <div class="panel-card">
+                <div class="panel-header panel-header-flex">
+                    <div>
+                        <span class="section-label">Yeni Operasyon</span>
+                        <h2>Rota Oluştur</h2>
+                    </div>
+                    <button class="primary-button btn-small" onclick="openCreateVehicleModal()">+ Yeni Araç Ekle</button>
+                </div>
+
+                <form id="createRouteForm" class="form-block">
+                    <div class="input-group">
+                        <label for="vehicleSelect">Araç Seçimi</label>
+                        <select id="vehicleSelect" required>
+                            <option value="">Araç Yükleniyor...</option>
+                        </select>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="departureBranch">Çıkış Şubesi</label>
+                            <select id="departureBranch" required>
+                                <option value="">Şube Seçin</option>
+                            </select>
+                        </div>
+                        <div class="input-group">
+                            <label for="arrivalBranch">Varış Şubesi</label>
+                            <select id="arrivalBranch" required>
+                                <option value="">Şube Seçin</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="input-group">
+                            <label for="departureTime">Kalkış Zamanı</label>
+                            <input type="datetime-local" id="departureTime" required>
+                        </div>
+                        <div class="input-group">
+                            <label for="arrivalTime">Tahmini Varış (Opsiyonel)</label>
+                            <input type="datetime-local" id="arrivalTime">
+                        </div>
+                    </div>
+
+                    <button type="submit" class="primary-button">Rotayı Başlat</button>
+                </form>
+            </div>
+
+            <div class="panel-card">
+                <div class="panel-header">
+                    <div>
+                        <span class="section-label">Aktif Operasyonlar</span>
+                        <h2>Mevcut Rotalar</h2>
+                    </div>
+                </div>
+                <div class="table-wrapper">
+                    <table>
+                        <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Araç (Plaka)</th>
+                            <th>Güzergah</th>
+                            <th>Kalkış</th>
+                            <th>İşlem</th>
+                        </tr>
+                        </thead>
+                        <tbody id="routesTable">
+                        <tr><td colspan="5">Veriler yükleniyor...</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="createShipmentSection" class="container content-section">
+        <div class="panel-card" style="max-width: 800px; margin: 0 auto;">
+            <div class="panel-header">
+                <div>
+                    <span class="section-label">Operasyon Merkezi</span>
+                    <h2>Yeni Kargo Kaydı</h2>
+                    <p>Gönderici, alıcı ve adres bilgilerini seçerek yeni bir gönderi oluşturun.</p>
+                </div>
+            </div>
+
+            <form id="createShipmentForm" class="form-block">
+                <div class="form-row">
+                    <div class="input-group">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
+                            <label for="senderSelect" style="margin-bottom: 0;">Gönderici Müşteri</label>
+                            <button type="button" onclick="openQuickCustomerModal()" style="background: none; border: none; color: var(--orange); font-size: 12px; font-weight: bold; cursor: pointer;">+ Yeni Ekle</button>
+                        </div>
+                        <select id="senderSelect" required>
+                            <option value="">Gönderici Seçin...</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 8px;">
+                            <label for="receiverSelect" style="margin-bottom: 0;">Alıcı Müşteri</label>
+                            <button type="button" onclick="openQuickCustomerModal()" style="background: none; border: none; color: var(--orange); font-size: 12px; font-weight: bold; cursor: pointer;">+ Yeni Ekle</button>
+                        </div>
+                        <select id="receiverSelect" required>
+                            <option value="">Alıcı Seçin...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="originAddressSelect">Çıkış Adresi</label>
+                        <select id="originAddressSelect" required>
+                            <option value="">Adres Seçin...</option>
+                        </select>
+                    </div>
+                    <div class="input-group">
+                        <label for="destinationAddressSelect">Varış Adresi</label>
+                        <select id="destinationAddressSelect" required>
+                            <option value="">Adres Seçin...</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="input-group">
+                        <label for="shipmentWeight">Ağırlık (kg)</label>
+                        <input type="number" id="shipmentWeight" step="0.1" min="0.1" placeholder="Örn: 2.5" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="shipmentDistance">Mesafe (km)</label>
+                        <input type="number" id="shipmentDistance" step="1" min="1" placeholder="Örn: 450" required>
+                    </div>
+                </div>
+
+                <div style="margin-top: 10px; padding: 15px; background: rgba(255,107,0,0.05); border-radius: 8px; border: 1px dashed var(--orange);">
+                    <p style="font-size: 13px; color: var(--muted);">* Fiyatlandırma, girdiğiniz ağırlık ve mesafe üzerinden sistem tarafından otomatik hesaplanacaktır.</p>
+                </div>
+
+                <button type="submit" class="primary-button">Kargoyu Kaydet ve Takip Kodu Üret</button>
+            </form>
+        </div>
+    </section>
 </main>
+
+<div id="trackingModal" class="modal-overlay hidden">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>Kargo Geçmişi: <span id="modalTrackingCode"></span></h3>
+            <button id="closeModalBtn" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <ul id="trackingTimeline" class="timeline">
+            </ul>
+        </div>
+    </div>
+</div>
+
+<div id="quickCustomerModal" class="modal-overlay hidden">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>Hızlı Kayıt: Müşteri ve Adres</h3>
+            <button type="button" id="closeCustomerModalBtn" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="quickCustomerForm" class="form-block">
+                <div class="input-group">
+                    <label>Ad Soyad</label>
+                    <input type="text" id="qcName" required>
+                </div>
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Telefon</label>
+                        <input type="tel" id="qcPhone" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Müşteri Tipi</label>
+                        <select id="qcType" required>
+                            <option value="INDIVIDUAL">Bireysel</option>
+                            <option value="CORPORATE">Kurumsal</option>
+                        </select>
+                    </div>
+                </div>
+
+                <hr style="border: 0; border-top: 1px solid var(--border); margin: 10px 0;">
+
+                <div class="form-row">
+                    <div class="input-group">
+                        <label>Adres Başlığı (Örn: Ev, İş)</label>
+                        <input type="text" id="qcAddressTitle" required>
+                    </div>
+                    <div class="input-group">
+                        <label>Şehir</label>
+                        <input type="text" id="qcCity" required>
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label>Açık Adres</label>
+                    <input type="text" id="qcAddressText" required>
+                </div>
+
+                <button type="submit" class="primary-button" style="margin-top: 10px;">Kaydet ve Listeye Ekle</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="createBranchModal" class="modal-overlay hidden">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>Yeni Şube / Aktarma Merkezi Ekle</h3>
+            <button type="button" id="closeBranchModalBtn" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="createBranchForm" class="form-block">
+                <div class="input-group">
+                    <label for="branchName">Şube Adı</label>
+                    <input type="text" id="branchName" placeholder="Örn: Kadıköy Şube" required>
+                </div>
+                <div class="input-group">
+                    <label for="branchCity">Bulunduğu Şehir</label>
+                    <input type="text" id="branchCity" placeholder="Örn: İstanbul" required>
+                </div>
+                <div class="input-group">
+                    <label for="branchAddressText">Şube Açık Adresi</label>
+                    <input type="text" id="branchAddressText" placeholder="Örn: Caferağa Mah. Moda Cad. No:12" required>
+                </div>
+                <div class="input-group">
+                    <label for="isTransferCenter">Şube Tipi</label>
+                    <select id="isTransferCenter" required>
+                        <option value="false">Normal Şube</option>
+                        <option value="true">Aktarma Merkezi (Transfer Hub)</option>
+                    </select>
+                </div>
+                <div class="info-box">
+                    <p class="info-text">* Aktarma merkezleri, rotalar arası kargo transferi için kullanılır.</p>
+                </div>
+                <button type="submit" class="primary-button" style="margin-top: 15px;">Şubeyi Kaydet</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="loadShipmentModal" class="modal-overlay hidden">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>Araca Kargo Yükle (Rota: #<span id="targetRouteId"></span>)</h3>
+            <button type="button" id="closeLoadModalBtn" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="loadShipmentForm" class="form-block">
+                <input type="hidden" id="hiddenRouteId">
+                <div class="input-group">
+                    <label for="pendingShipmentSelect">Bekleyen Kargolar</label>
+                    <select id="pendingShipmentSelect" required>
+                        <option value="">Kargo Seçin...</option>
+                    </select>
+                </div>
+                <div class="info-box" style="background: rgba(37, 99, 235, 0.1); border: 1px dashed var(--orange); margin-bottom: 15px;">
+                    <p class="info-text" style="color: var(--navy); font-weight: bold;">
+                        * Yükleme yapıldığında kargo durumu otomatik olarak "Yolda" olarak güncellenecektir.
+                    </p>
+                </div>
+                <button type="submit" class="primary-button">Kargoyu Araca Bindir</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div id="createVehicleModal" class="modal-overlay hidden">
+    <div class="modal-card">
+        <div class="modal-header">
+            <h3>Yeni Araç Kaydı</h3>
+            <button type="button" id="closeVehicleModalBtn" class="close-btn">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="createVehicleForm" class="form-block">
+                <div class="input-group">
+                    <label for="plateNumber">Plaka Numarası</label>
+                    <input type="text" id="plateNumber" placeholder="Örn: 34 ABC 123" required>
+                </div>
+                <div class="input-group">
+                    <label for="vehicleType">Araç Tipi</label>
+                    <select id="vehicleType" required>
+                        <option value="TIR">TIR (Ağır Vasıta)</option>
+                        <option value="KAMYON">Kamyon</option>
+                        <option value="KAMYONET">Kamyonet</option>
+                        <option value="MINIVAN">Minivan</option>
+                    </select>
+                </div>
+                <div class="input-group">
+                    <label for="capacity">Kapasite (kg)</label>
+                    <input type="number" id="capacity" placeholder="Örn: 5000" required>
+                </div>
+                <button type="submit" class="primary-button" style="margin-top: 15px;">Aracı Kaydet</button>
+            </form>
+        </div>
+    </div>
+</div>
 
 <footer class="footer">
     <div class="container footer-inner">

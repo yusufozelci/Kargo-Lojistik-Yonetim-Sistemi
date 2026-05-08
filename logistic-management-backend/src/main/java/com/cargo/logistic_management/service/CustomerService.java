@@ -21,4 +21,11 @@ public class CustomerService {
     public Customer musterikaydet(Customer customer) {
         return customerRepository.save(customer);
     }
+
+    public void musteriSil(Long id) {
+        if (!customerRepository.existsById(id)) {
+            throw new RuntimeException("Müşteri bulunamadı!");
+        }
+        customerRepository.deleteById(id);
+    }
 }

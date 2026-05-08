@@ -20,20 +20,20 @@ public class VehicleController {
     private final VehicleService vehicleService;
 
     @GetMapping
-    @PreAuthorize("hasAnyRole('ADMIN', 'COURIER')")
-    public ResponseEntity<List<VehicleResponseDto>> getAll() {
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<VehicleResponseDto>> getAllVehicles() {
         return ResponseEntity.ok(vehicleService.getAllVehicles());
     }
 
     @PostMapping
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<VehicleResponseDto> create(@Valid @RequestBody VehicleRequestDto dto) {
-        return new ResponseEntity<>(vehicleService.createVehicle(dto), HttpStatus.CREATED);
+    public ResponseEntity<VehicleResponseDto> createVehicle(@Valid @RequestBody VehicleRequestDto requestDto) {
+        return new ResponseEntity<>(vehicleService.createVehicle(requestDto), HttpStatus.CREATED);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> delete(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteVehicle(@PathVariable Long id) {
         vehicleService.deleteVehicle(id);
         return ResponseEntity.noContent().build();
     }

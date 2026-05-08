@@ -65,4 +65,8 @@ public class RouteService {
                 .map(RouteShipment::getShipment)
                 .collect(Collectors.toList());
     }
+
+    public List<Route> getAllRoutes() {
+        return routeRepository.findAll();
+    }
 }

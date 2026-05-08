@@ -10,6 +10,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api/routes")
 @RequiredArgsConstructor
@@ -28,5 +30,11 @@ public class RouteController {
     public ResponseEntity<String> loadShipmentToRoute(@PathVariable Long routeId, @PathVariable Long shipmentId) {
         String response = routeService.addShipmentToRoute(routeId, shipmentId);
         return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    @PreAuthorize("hasAnyRole('ADMIN', 'COURIER')")
+    public ResponseEntity<List<Route>> getAllRoutes() {
+        return ResponseEntity.ok(routeService.getAllRoutes());
     }
 }

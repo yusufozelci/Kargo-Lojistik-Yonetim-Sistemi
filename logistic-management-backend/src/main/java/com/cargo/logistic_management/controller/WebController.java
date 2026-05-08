@@ -3,6 +3,7 @@ package com.cargo.logistic_management.controller;
 import com.cargo.logistic_management.datatransferobject.UserRegisterDto;
 import com.cargo.logistic_management.entity.Shipment;
 import com.cargo.logistic_management.repository.ShipmentRepository;
+import com.cargo.logistic_management.repository.UserRepository;
 import com.cargo.logistic_management.service.BranchService;
 import com.cargo.logistic_management.service.PricingService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,9 @@ public class WebController {
     private final ShipmentRepository shipmentRepository;
     private final PricingService pricingService;
     private final BranchService branchService;
+    private final com.cargo.logistic_management.repository.UserRepository userRepository;
+    private final com.cargo.logistic_management.service.ShipmentService shipmentService;
+
 
     @GetMapping("/")
     public String homePage(Model model) {
@@ -82,6 +86,11 @@ public class WebController {
     @GetMapping("/user-dashboard")
     public String userDashboard(Authentication authentication, Model model) {
         addUserDashboardBaseData(authentication, model);
+
+        var user = userRepository.findByEmail(authentication.getName())
+                .orElseThrow(() -> new RuntimeException("Kullanıcı bulunamadı"));
+
+        model.addAttribute("myShipments", shipmentService.kullaniciKargolariniGetir(user.getPhone()));
         return "user-dashboard";
     }
 
@@ -138,6 +147,5 @@ public class WebController {
 
     private void addUserDashboardBaseData(Authentication authentication, Model model) {
         model.addAttribute("email", authentication.getName());
-        model.addAttribute("branches", branchService.getAllBranches());
     }
 }
