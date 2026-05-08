@@ -250,18 +250,21 @@ document.addEventListener("DOMContentLoaded", () => {
         const branchesTable = document.getElementById("branchesTable");
 
         if (!branches || branches.length === 0) {
-            branchesTable.innerHTML = `<tr><td colspan="4">Şube kaydı bulunamadı.</td></tr>`;
+            branchesTable.innerHTML = `<tr><td colspan="5">Şube kaydı bulunamadı.</td></tr>`;
             return;
         }
 
         branchesTable.innerHTML = branches.map(branch => `
-            <tr>
-                <td>${branch.id}</td>
-                <td>${escapeHtml(branch.name)}</td>
-                <td>${escapeHtml(branch.cityName || "-")}</td>
-                <td>${branch.isTransferCenter ? "Evet" : "Hayır"}</td>
-            </tr>
-        `).join("");
+        <tr>
+            <td>${branch.id}</td>
+            <td>${escapeHtml(branch.name)}</td>
+            <td>${escapeHtml(branch.cityName || "-")}</td>
+            <td>${branch.isTransferCenter ? "Evet" : "Hayır"}</td>
+            <td>
+                <button class="btn-small btn-delete" onclick="deleteBranch(${branch.id})">Sil</button>
+            </td>
+        </tr>
+    `).join("");
     }
 
 
@@ -664,7 +667,7 @@ document.addEventListener("DOMContentLoaded", () => {
     window.openCreateBranchModal = function() {
         document.getElementById("createBranchModal").classList.remove("hidden");
     };
-    
+
 
     window.openCreateBranchModal = function() {
         document.getElementById("createBranchModal").classList.remove("hidden");
@@ -728,4 +731,28 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
+
+    window.deleteBranch = async function(id) {
+        if (!confirm("Bu şubeyi silmek istediğinize emin misiniz?")) return;
+
+        try {
+            const response = await fetch(`/api/branches/${id}`, {
+                method: "DELETE"
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || "Şube silinirken bir hata oluştu.");
+            }
+
+            showMessage("Şube başarıyla silindi.", "success");
+
+            await loadBranches();
+            renderBranchesTable();
+            populateRouteDropdowns();
+
+        } catch (error) {
+            showMessage(error.message, "error");
+        }
+    };
 });
