@@ -131,7 +131,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function renderLatestShipments() {
         const latestShipmentsTable = document.getElementById("latestShipmentsTable");
-
         const latest = shipments.slice(-5).reverse();
 
         if (latest.length === 0) {
@@ -139,15 +138,20 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        latestShipmentsTable.innerHTML = latest.map(shipment => `
+        latestShipmentsTable.innerHTML = latest.map(shipment => {
+            let senderStr = shipment.senderName || (shipment.sender ? shipment.sender.fullName : "-");
+            let receiverStr = shipment.receiverName || (shipment.receiver ? shipment.receiver.fullName : "-");
+
+            return `
             <tr>
                 <td>${escapeHtml(shipment.trackingCode)}</td>
-                <td>${escapeHtml(shipment.senderName)}</td>
-                <td>${escapeHtml(shipment.receiverName)}</td>
+                <td>${escapeHtml(senderStr)}</td>
+                <td>${escapeHtml(receiverStr)}</td>
                 <td>${renderStatusBadge(shipment.status)}</td>
                 <td>${formatCurrency(shipment.totalPrice)}</td>
             </tr>
-        `).join("");
+            `;
+        }).join("");
     }
 
     function renderShipmentsTable(data) {
@@ -159,18 +163,24 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
 
-        const couriers = users.filter(u => u.roleName && u.roleName.includes("COURIER"));
-
+        const couriers = users.filter(u => {
+            let roleStr = u.roleName || (u.role ? u.role.roleName : "");
+            return roleStr && roleStr.includes("COURIER");
+        });
         let courierOptions = `<option value="">Kurye Seç</option>`;
         couriers.forEach(c => {
             courierOptions += `<option value="${c.id}">${c.fullName}</option>`;
         });
 
-        tbody.innerHTML = data.map(shipment => `
+        tbody.innerHTML = data.map(shipment => {
+            let senderStr = shipment.senderName || (shipment.sender ? shipment.sender.fullName : "-");
+            let receiverStr = shipment.receiverName || (shipment.receiver ? shipment.receiver.fullName : "-");
+
+            return `
             <tr>
                 <td><strong>${shipment.trackingCode}</strong></td>
-                <td>${shipment.senderName}</td>
-                <td>${shipment.receiverName}</td>
+                <td>${escapeHtml(senderStr)}</td>
+                <td>${escapeHtml(receiverStr)}</td>
                 <td>${renderStatusBadge(shipment.status)}</td>
                 <td>${formatCurrency(shipment.totalPrice)}</td>
                 <td style="min-width: 200px;">
@@ -201,7 +211,8 @@ document.addEventListener("DOMContentLoaded", () => {
                     </div>
                 </td>
             </tr>
-        `).join("");
+            `;
+        }).join("");
     }
 
     function renderCustomersTable() {
@@ -228,28 +239,30 @@ document.addEventListener("DOMContentLoaded", () => {
     function renderUsersTable() {
         const usersTable = document.getElementById("usersTable");
 
-        if (!usersTable) {
-            return;
-        }
+        if (!usersTable) return;
 
         if (!users || users.length === 0) {
             usersTable.innerHTML = `<tr><td colspan="7">Kullanıcı kaydı bulunamadı.</td></tr>`;
             return;
         }
 
-        usersTable.innerHTML = users.map(user => `
-        <tr>
-            <td>${user.id}</td>
-            <td>${escapeHtml(user.fullName)}</td>
-            <td>${escapeHtml(user.email)}</td>
-            <td>${escapeHtml(user.phone || "-")}</td>
-            <td>${renderRoleBadge(user.roleName)}</td>
-            <td>${renderUserStatus(user.status)}</td>
-            <td>
-                <button class="btn-small btn-delete" onclick="deleteUser(${user.id})">Sil</button>
-            </td>
-        </tr>
-    `).join("");
+        usersTable.innerHTML = users.map(user => {
+            let roleStr = user.roleName || (user.role ? user.role.roleName : "-");
+
+            return `
+            <tr>
+                <td>${user.id}</td>
+                <td>${escapeHtml(user.fullName)}</td>
+                <td>${escapeHtml(user.email)}</td>
+                <td>${escapeHtml(user.phone || "-")}</td>
+                <td>${renderRoleBadge(roleStr)}</td>
+                <td>${renderUserStatus(user.status)}</td>
+                <td>
+                    <button class="btn-small btn-delete" onclick="deleteUser(${user.id})">Sil</button>
+                </td>
+            </tr>
+            `;
+        }).join("");
     }
 
     function renderBranchesTable() {
@@ -282,10 +295,11 @@ document.addEventListener("DOMContentLoaded", () => {
             return shipments;
         }
 
+        // DÜZELTME: Arama işleminde nested objeler için güvenlik önlemi eklendi
         return shipments.filter(shipment =>
             String(shipment.trackingCode || "").toLowerCase().includes(query) ||
-            String(shipment.senderName || "").toLowerCase().includes(query) ||
-            String(shipment.receiverName || "").toLowerCase().includes(query) ||
+            String(shipment.sender && shipment.sender.fullName ? shipment.sender.fullName : "").toLowerCase().includes(query) ||
+            String(shipment.receiver && shipment.receiver.fullName ? shipment.receiver.fullName : "").toLowerCase().includes(query) ||
             String(shipment.status || "").toLowerCase().includes(query)
         );
     }
@@ -313,17 +327,23 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function renderRoleBadge(roleName) {
+        let cleanRole = String(roleName || "-").replace("ROLE_", "");
+
         const roleText = {
             ADMIN: "Admin",
             CUSTOMER: "Kullanıcı",
+            USER: "Kullanıcı",
             COURIER: "Kurye"
         };
 
+        let displayText = roleText[cleanRole] || escapeHtml(cleanRole);
+        let badgeColor = displayText === "-" ? "status-cancelled" : "status-in-transit";
+
         return `
-        <span class="status-badge status-in-transit">
-            ${roleText[roleName] || escapeHtml(roleName || "-")}
+        <span class="status-badge ${badgeColor}">
+            ${displayText}
         </span>
-    `;
+        `;
     }
 
     function renderUserStatus(status) {
@@ -557,7 +577,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const receiverSelect = document.getElementById("receiverSelect");
         const originSelect = document.getElementById("originAddressSelect");
         const destSelect = document.getElementById("destinationAddressSelect");
-        const branchAddressSelect = document.getElementById("branchAddressId"); // YENİ
+        const branchAddressSelect = document.getElementById("branchAddressId");
 
         const addressOptions = `<option value="">Seçiniz...</option>` +
             addresses.map(a => `<option value="${a.id}">${a.title} - ${a.city}</option>`).join("");
@@ -571,7 +591,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (originSelect) originSelect.innerHTML = addressOptions;
         if (destSelect) destSelect.innerHTML = addressOptions;
-        if (branchAddressSelect) branchAddressSelect.innerHTML = addressOptions; // YENİ
+        if (branchAddressSelect) branchAddressSelect.innerHTML = addressOptions;
     }
 
     const createShipmentForm = document.getElementById("createShipmentForm");
@@ -668,11 +688,6 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-
-
-    window.openCreateBranchModal = function() {
-        document.getElementById("createBranchModal").classList.remove("hidden");
-    };
 
 
     window.openCreateBranchModal = function() {
@@ -809,7 +824,6 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     };
 
-
     window.openLoadShipmentModal = function(routeId) {
         document.getElementById("targetRouteId").innerText = routeId;
         document.getElementById("hiddenRouteId").value = routeId;
@@ -819,7 +833,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         select.innerHTML = '<option value="">Yüklenecek Kargoyu Seçin...</option>';
         pendingShipments.forEach(s => {
-            select.innerHTML += `<option value="${s.id}">${s.trackingCode} - (${s.senderName} -> ${s.receiverName})</option>`;
+            select.innerHTML += `<option value="${s.id}">${s.trackingCode} - (${s.sender ? s.sender.fullName : '-'} -> ${s.receiver ? s.receiver.fullName : '-'})</option>`;
         });
 
         document.getElementById("loadShipmentModal").classList.remove("hidden");
@@ -848,7 +862,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             await loadShipments();
             await loadRoutes();
-            renderShipmentsTable();
+            renderShipmentsTable(shipments);
             renderRoutesTable();
 
             document.getElementById("loadShipmentModal").classList.add("hidden");
@@ -902,6 +916,5 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
     }
-
 
 });

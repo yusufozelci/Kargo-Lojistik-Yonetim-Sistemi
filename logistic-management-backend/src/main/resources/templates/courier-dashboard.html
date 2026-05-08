@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="tr" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>NovaKargo | Kurye Paneli</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" th:href="@{/css/user-dashboard.css}">
+    <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <script th:src="@{/js/theme.js}" defer></script>
+    <script th:src="@{/js/courier-dashboard.js}" defer></script>
+</head>
+<body>
+
+<header class="site-header">
+    <div class="container header-inner">
+        <a th:href="@{/}" class="brand">
+            <div class="brand-icon"><span class="box-top"></span><span class="box-side"></span></div>
+            <strong>Nova<span>Kargo</span></strong>
+        </a>
+
+        <div class="header-actions">
+            <span class="user-chip" th:text="${email}">kurye@mail.com</span>
+            <form th:action="@{/logout}" method="post">
+                <button type="submit" class="logout-button">Çıkış Yap</button>
+            </form>
+        </div>
+    </div>
+</header>
+
+<main>
+    <section class="dashboard-hero">
+        <div class="container hero-grid">
+            <div>
+                <span class="eyebrow">Kurye Operasyon Paneli</span>
+                <h1>Sahadaki gücümüz sensin.</h1>
+                <p>
+                    Üzerine zimmetlenmiş olan kargoları görüntüle, adres detaylarına ulaş
+                    ve teslimat durumlarını tek tıkla güncelle.
+                </p>
+            </div>
+
+            <div class="quick-card">
+                <strong>Aktif Kurye</strong>
+                <span th:text="${email}">kurye@mail.com</span>
+                <small>Saha İşlem Ekranı</small>
+            </div>
+        </div>
+    </section>
+
+    <section class="container panel-card" style="margin-bottom: 2rem;">
+        <div class="panel-head">
+            <div>
+                <span>Dağıtım Listesi</span>
+                <h2>Zimmetli Kargolarım</h2>
+            </div>
+            <div class="round-icon">🚚</div>
+        </div>
+
+        <div id="dashboardMessage" class="message-box hidden"></div>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                <tr>
+                    <th>Takip Kodu</th>
+                    <th>Gönderici</th>
+                    <th>Alıcı & Adres</th>
+                    <th>Mevcut Durum</th>
+                    <th>Durum Güncelle</th>
+                </tr>
+                </thead>
+                <tbody id="courierShipmentsTable">
+                <tr>
+                    <td colspan="5">Kargolar yükleniyor...</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </section>
+</main>
+
+<footer class="footer">
+    <div class="container footer-inner">
+        <span>NovaKargo © 2026</span>
+        <span>Kurye Paneli</span>
+    </div>
+</footer>
+
+</body>
+</html>

@@ -35,19 +35,23 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
 
                 .authorizeHttpRequests(auth -> auth
-                        // 1. ADIM: Herkese açık olan yollar
+
                         .requestMatchers(
                                 "/",
                                 "/tracking",
                                 "/calculate-price",
                                 "/login",
                                 "/register",
+                                "/forgot-password",
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",
                                 "/error",
                                 "/api/users/login",
-                                "/api/users/register"
+                                "/api/users/register",
+                                "/api/users/forgot-password",
+                                "/api/users/reset-password",
+                                "/api/users/verify-otp"
                         ).permitAll()
 
                         .requestMatchers("/admin-dashboard/**").hasRole("ADMIN")
@@ -108,13 +112,18 @@ public class SecurityConfig {
             jakarta.servlet.http.HttpServletResponse response,
             Authentication authentication
     ) throws java.io.IOException {
-
         boolean isAdmin = authentication.getAuthorities()
                 .stream()
                 .anyMatch(authority -> authority.getAuthority().equals("ROLE_ADMIN"));
 
+        boolean isCourier = authentication.getAuthorities()
+                .stream()
+                .anyMatch(authority -> authority.getAuthority().equals("ROLE_COURIER"));
+
         if (isAdmin) {
             response.sendRedirect("/admin-dashboard");
+        } else if (isCourier) {
+            response.sendRedirect("/courier-dashboard");
         } else {
             response.sendRedirect("/user-dashboard");
         }

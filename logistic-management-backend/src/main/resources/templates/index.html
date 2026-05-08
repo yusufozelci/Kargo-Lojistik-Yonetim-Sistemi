@@ -34,9 +34,14 @@
             <a href="#contact">İletişim</a>
         </nav>
 
-        <a th:href="@{/login}" class="create-btn">
+        <a th:if="${!isLoggedIn}" th:href="@{/login}" class="create-btn">
             <span class="create-icon">↗</span>
             Giriş Yap
+        </a>
+
+        <a th:if="${isLoggedIn}" th:href="@{${dashboardUrl}}" class="create-btn" style="background: linear-gradient(135deg, #061b43, #092a61);">
+            <span class="create-icon">👤</span>
+            Panele Dön
         </a>
 
     </div>

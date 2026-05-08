@@ -77,8 +77,8 @@
                 <tbody>
                 <tr th:each="shipment : ${myShipments}">
                     <td th:text="${shipment.trackingCode}">TRK-123</td>
-                    <td th:text="${shipment.senderName}">Ali Veli</td>
-                    <td th:text="${shipment.receiverName}">Ayşe Fatma</td>
+                    <td th:text="${shipment.senderName != null ? shipment.senderName : '-'}">Ali Veli</td>
+                    <td th:text="${shipment.receiverName != null ? shipment.receiverName : '-'}">Ayşe Fatma</td>
                     <td>
                         <span th:class="'status-badge status-' + ${shipment.status.toString().toLowerCase()}"
                               th:text="${shipment.status}">Yolda</span>
