@@ -6,6 +6,9 @@ import com.cargo.logistic_management.repository.RoleRepository;
 import com.cargo.logistic_management.entity.User;
 import com.cargo.logistic_management.repository.UserRepository;
 import com.cargo.logistic_management.exception.ResourceNotFoundException;
+import com.cargo.logistic_management.service.EmailService;
+import java.time.LocalDateTime;
+import java.util.Random;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -20,6 +23,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     private UserResponseDto convertToDto(User user) {
         String roleName = user.getRole() != null
@@ -75,5 +79,38 @@ public class UserService {
     }
 
     public void register(UserRegisterDto userRegisterDto) {
+    }
+    public void generateAndSendOtp(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Bu e-posta adresine ait kullanıcı bulunamadı!"));
+
+        String otp = String.format("%06d", new Random().nextInt(999999));
+
+        user.setResetOtp(otp);
+        user.setResetOtpExpiry(LocalDateTime.now().plusMinutes(15));
+
+        userRepository.save(user);
+        emailService.sendOtpEmail(email, otp);
+    }
+
+    public void resetPassword(String email, String otp, String newPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("Kullanıcı bulunamadı!"));
+
+        if (user.getResetOtp() == null || !user.getResetOtp().equals(otp)) {
+            throw new IllegalArgumentException("Hatalı veya geçersiz doğrulama kodu!");
+        }
+
+        if (user.getResetOtpExpiry().isBefore(LocalDateTime.now())) {
+            throw new IllegalArgumentException("Doğrulama kodunun süresi dolmuş. Lütfen yeni kod isteyin.");
+        }
+
+        user.setPasswordHash(passwordEncoder.encode(newPassword));
+        user.setResetOtp(null);
+        user.setResetOtpExpiry(null);
+
+        userRepository.save(user);
+
+        emailService.sendPasswordChangeNotification(email);
     }
 }

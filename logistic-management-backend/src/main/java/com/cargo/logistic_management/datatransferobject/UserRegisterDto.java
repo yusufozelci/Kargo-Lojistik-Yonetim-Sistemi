@@ -25,6 +25,10 @@ public class UserRegisterDto {
     private String phone;
 
     @NotBlank(message = "Şifre alanı boş bırakılamaz.")
-    @Size(min = 6, max = 50, message = "Şifre en az 6, en fazla 50 karakter olmalıdır.")
+    @Size(min = 8, max = 50, message = "Şifre en az 8, en fazla 50 karakter olmalıdır.")
+    @Pattern(
+            regexp = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[@$!%*?&.#_-]).+$",
+            message = "Şifreniz en az bir büyük harf, bir küçük harf, bir rakam ve bir özel karakter (@$!%*?&.#_-) içermelidir."
+    )
     private String password;
 }
