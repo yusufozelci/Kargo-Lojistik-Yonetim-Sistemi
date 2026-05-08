@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" th:href="@{/css/user-dashboard.css}">
     <link rel="stylesheet" th:href="@{/css/theme.css}">
+    <script th:src="@{/js/user-dashboard.js}" defer></script>
     <script th:src="@{/js/theme.js}" defer></script>
 </head>
 <body>
@@ -151,14 +152,15 @@
                     </div>
                 </div>
 
-                <input type="hidden" id="currentTrackingCode" th:value="${userShipment.trackingCode}" />
-                <div style="margin-top: 30px; border-top: 1px solid #e2e8f0; padding-top: 20px;">
-                    <h3 style="font-size: 16px; margin-bottom: 15px;">Kargo Hareketleri</h3>
-                    <div id="trackingTimelineContainer" class="timeline-wrapper">
-                        <p style="color: #64748b; font-size: 14px;">Kargo geçmişi yükleniyor...</p>
+                <div class="timeline-section" style="margin-top: 2rem; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 1.5rem;">
+                    <h3 style="color: var(--orange); margin-bottom: 1.5rem; font-size: 1.1rem;">Kargo Hareket Geçmişi</h3>
+
+                    <input type="hidden" id="currentTrackingCode" th:value="${userShipment.trackingCode}" />
+
+                    <div id="trackingTimelineContainer" class="timeline-container">
+                        <p class="loading-text" style="color: #888;">Hareketler yükleniyor...</p>
                     </div>
                 </div>
-
             </div>
         </article>
 
@@ -207,53 +209,7 @@
     </div>
 </footer>
 
-<script>
-    document.addEventListener("DOMContentLoaded", async () => {
-        const trackingCodeInput = document.getElementById("currentTrackingCode");
-        if (trackingCodeInput) {
-            const trackingCode = trackingCodeInput.value;
-            const timelineContainer = document.getElementById("trackingTimelineContainer");
-            try {
-                const response = await fetch(`/api/tracking/${trackingCode}`);
-                if (!response.ok) throw new Error("Takip geçmişi alınamadı.");
 
-                const history = await response.json();
-
-                if (history.length === 0) {
-                    timelineContainer.innerHTML = "<p>Bu kargo için henüz bir hareket kaydı bulunmuyor.</p>";
-                    return;
-                }
-
-                let html = '<div class="timeline">';
-                history.forEach(log => {
-                    const dateObj = new Date(log.dateTime);
-                    const date = dateObj.toLocaleDateString('tr-TR') + ' - ' + dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
-
-                    const statusMap = {
-                        'PENDING': 'Beklemede',
-                        'IN_TRANSIT': 'Yolda',
-                        'DELIVERED': 'Teslim Edildi',
-                        'CANCELLED': 'İptal Edildi'
-                    };
-                    const trStatus = statusMap[log.status] || log.status;
-
-                    html += `<div class="timeline-item">
-                            <div class="timeline-icon"></div>
-                            <div class="timeline-content">
-                                <div class="timeline-date">🕒 ${date}</div>
-                                <div class="timeline-status">${trStatus}</div>
-                                <div class="timeline-desc">${log.description}</div>
-                            </div>
-                         </div>`;
-                });
-                timelineContainer.innerHTML = html + '</div>';
-
-            } catch (e) {
-                timelineContainer.innerHTML = `<p style="color:red;">Hata: ${e.message}</p>`;
-            }
-        }
-    });
-</script>
 
 </body>
 </html>

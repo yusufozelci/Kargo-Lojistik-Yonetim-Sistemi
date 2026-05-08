@@ -137,3 +137,73 @@ tr:last-child td { border-bottom:0; }
     margin-top: 5px;
     line-height: 1.5;
 }
+
+
+.timeline-container {
+    position: relative;
+    padding-left: 2rem;
+    margin-left: 0.5rem;
+}
+
+.timeline-container::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 5px;
+    bottom: 5px;
+    width: 2px;
+    background: rgba(249, 115, 22, 0.2);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 1.5rem;
+}
+
+.timeline-dot {
+    position: absolute;
+    left: -2.35rem;
+    top: 0.25rem;
+    width: 12px;
+    height: 12px;
+    background: var(--orange);
+    border-radius: 50%;
+    border: 3px solid var(--navy);
+    z-index: 2;
+}
+
+.timeline-content {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 12px;
+    transition: transform 0.2s;
+}
+
+.timeline-content:hover {
+    transform: translateX(5px);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.timeline-time {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--orange);
+    font-weight: bold;
+    margin-bottom: 0.25rem;
+}
+
+.timeline-title {
+    display: block;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #fff;
+}
+
+.timeline-desc {
+    display: block;
+    font-size: 0.85rem;
+    color: #aaa;
+    margin-top: 0.25rem;
+    line-height: 1.4;
+}
