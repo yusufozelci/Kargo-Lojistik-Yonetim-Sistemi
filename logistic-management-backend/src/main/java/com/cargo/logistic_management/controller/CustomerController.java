@@ -24,4 +24,10 @@ public class CustomerController {
     public Customer yeniMusteriEkle(@RequestBody Customer customer) {
         return customerService.musterikaydet(customer);
     }
+
+    @DeleteMapping("/{id}")
+    public org.springframework.http.ResponseEntity<Void> musteriSil(@PathVariable Long id) {
+        customerService.musteriSil(id);
+        return org.springframework.http.ResponseEntity.noContent().build();
+    }
 }

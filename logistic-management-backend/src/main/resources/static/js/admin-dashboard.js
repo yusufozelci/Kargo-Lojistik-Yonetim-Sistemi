@@ -208,7 +208,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const customersTable = document.getElementById("customersTable");
 
         if (!customers || customers.length === 0) {
-            customersTable.innerHTML = `<tr><td colspan="4">Müşteri kaydı bulunamadı.</td></tr>`;
+            customersTable.innerHTML = `<tr><td colspan="5">Müşteri kaydı bulunamadı.</td></tr>`;
             return;
         }
 
@@ -218,6 +218,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 <td>${escapeHtml(customer.fullName)}</td>
                 <td>${escapeHtml(customer.phone || "-")}</td>
                 <td>${escapeHtml(customer.customerType || "-")}</td>
+                <td>
+                    <button class="btn-small btn-delete" onclick="deleteCustomer(${customer.id})">Sil</button>
+                </td>
             </tr>
         `).join("");
     }
@@ -230,7 +233,7 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         if (!users || users.length === 0) {
-            usersTable.innerHTML = `<tr><td colspan="6">Kullanıcı kaydı bulunamadı.</td></tr>`;
+            usersTable.innerHTML = `<tr><td colspan="7">Kullanıcı kaydı bulunamadı.</td></tr>`;
             return;
         }
 
@@ -242,6 +245,9 @@ document.addEventListener("DOMContentLoaded", () => {
             <td>${escapeHtml(user.phone || "-")}</td>
             <td>${renderRoleBadge(user.roleName)}</td>
             <td>${renderUserStatus(user.status)}</td>
+            <td>
+                <button class="btn-small btn-delete" onclick="deleteUser(${user.id})">Sil</button>
+            </td>
         </tr>
     `).join("");
     }
@@ -750,6 +756,53 @@ document.addEventListener("DOMContentLoaded", () => {
             await loadBranches();
             renderBranchesTable();
             populateRouteDropdowns();
+
+        } catch (error) {
+            showMessage(error.message, "error");
+        }
+    };
+
+    window.deleteUser = async function(id) {
+        if (!confirm("Bu kullanıcıyı sistemden silmek istediğinize emin misiniz?")) return;
+
+        try {
+            const response = await fetch(`/api/users/${id}`, {
+                method: "DELETE"
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || "Kullanıcı silinirken bir hata oluştu.");
+            }
+
+            showMessage("Kullanıcı başarıyla silindi.", "success");
+
+            await loadUsers();
+            renderUsersTable();
+
+        } catch (error) {
+            showMessage(error.message, "error");
+        }
+    };
+
+    window.deleteCustomer = async function(id) {
+        if (!confirm("Bu müşteriyi silmek istediğinize emin misiniz? (Müşterinin geçmiş kargo kayıtları korunacaktır.)")) return;
+
+        try {
+            const response = await fetch(`/api/customers/${id}`, {
+                method: "DELETE"
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(errorText || "Müşteri silinirken bir hata oluştu.");
+            }
+
+            showMessage("Müşteri başarıyla silindi.", "success");
+            
+            await loadCustomers();
+            renderCustomersTable();
+            populateShipmentDropdowns();
 
         } catch (error) {
             showMessage(error.message, "error");
