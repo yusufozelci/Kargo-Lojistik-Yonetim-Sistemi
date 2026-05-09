@@ -86,7 +86,7 @@
             <div class="form-head">
                 <span>Yeni Şifre Belirleme</span>
                 <h2>Şifreyi Yenile</h2>
-                <p>E-postanıza gelen 6 haneli kodu ve yeni şifrenizi girin.</p>
+                <p>E-postanıza gelen 6 haneli kodu ve yeni şifrenizi iki kez girerek onaylayın.</p>
             </div>
 
             <div id="resetAlert" class="alert hidden"></div>
@@ -99,6 +99,11 @@
             <div class="input-group">
                 <label for="newPassword">Yeni Şifre</label>
                 <input type="password" id="newPassword" placeholder="En az 6 karakter" required>
+            </div>
+
+            <div class="input-group">
+                <label for="confirmPassword">Yeni Şifre (Tekrar)</label>
+                <input type="password" id="confirmPassword" placeholder="Şifrenizi tekrar girin" required>
             </div>
 
             <button type="submit" class="primary-button">Şifremi Güncelle</button>

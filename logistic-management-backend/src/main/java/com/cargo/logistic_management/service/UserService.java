@@ -6,7 +6,6 @@ import com.cargo.logistic_management.repository.RoleRepository;
 import com.cargo.logistic_management.entity.User;
 import com.cargo.logistic_management.repository.UserRepository;
 import com.cargo.logistic_management.exception.ResourceNotFoundException;
-import com.cargo.logistic_management.service.EmailService;
 import java.time.LocalDateTime;
 import java.util.Random;
 import lombok.RequiredArgsConstructor;
@@ -80,6 +79,7 @@ public class UserService {
 
     public void register(UserRegisterDto userRegisterDto) {
     }
+
     public void generateAndSendOtp(String email) {
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Bu e-posta adresine ait kullanıcı bulunamadı!"));
@@ -93,22 +93,29 @@ public class UserService {
         emailService.sendOtpEmail(email, otp);
     }
 
-    public void resetPassword(String email, String otp, String newPassword) {
+    public void resetPassword(String email, String otp, String newPassword, String confirmPassword) {
+        if (newPassword == null || !newPassword.equals(confirmPassword)) {
+            throw new IllegalArgumentException("Girdiğiniz şifreler birbiriyle uyuşmuyor!");
+        }
+
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException("Kullanıcı bulunamadı!"));
+
+        if (passwordEncoder.matches(newPassword, user.getPasswordHash())) {
+            throw new IllegalArgumentException("Yeni şifre, eski şifrenizle aynı olamaz! Lütfen farklı bir şifre belirleyin.");
+        }
 
         if (user.getResetOtp() == null || !user.getResetOtp().equals(otp)) {
             throw new IllegalArgumentException("Hatalı veya geçersiz doğrulama kodu!");
         }
 
         if (user.getResetOtpExpiry().isBefore(LocalDateTime.now())) {
-            throw new IllegalArgumentException("Doğrulama kodunun süresi dolmuş. Lütfen yeni kod isteyin.");
+            throw new IllegalArgumentException("Doğrulama kodunun süresi dolmuş.");
         }
 
         user.setPasswordHash(passwordEncoder.encode(newPassword));
         user.setResetOtp(null);
         user.setResetOtpExpiry(null);
-
         userRepository.save(user);
 
         emailService.sendPasswordChangeNotification(email);

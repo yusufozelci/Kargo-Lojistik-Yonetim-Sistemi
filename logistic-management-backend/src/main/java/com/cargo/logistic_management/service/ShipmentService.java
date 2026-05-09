@@ -90,6 +90,7 @@ public class ShipmentService {
 
         return convertToResponseDto(guncellenenKargo);
     }
+
     public ShipmentResponseDto kargoSorgula(String trackingCode) {
         Shipment shipment = shipmentRepository.findByTrackingCode(trackingCode)
                 .orElseThrow(() -> new ResourceNotFoundException("Bu takip koduyla bir kargo bulunamadı: " + trackingCode));
@@ -110,15 +111,24 @@ public class ShipmentService {
     @Transactional
     public ShipmentResponseDto kuryeAta(Long shipmentId, Long courierId) {
         Shipment kargo = shipmentRepository.findById(shipmentId)
-                .orElseThrow(() -> new ResourceNotFoundException("Kargo bulunamadı! ID: " + shipmentId));
+                .orElseThrow(() -> new ResourceNotFoundException("Kargo bulunamadı!"));
+
         var kurye = userRepository.findById(courierId)
-                .orElseThrow(() -> new ResourceNotFoundException("Kurye bulunamadı! ID: " + courierId));
+                .orElseThrow(() -> new ResourceNotFoundException("Kurye bulunamadı!"));
+        long atanmisKargoSayisi = shipmentRepository.countByCourierId(courierId);
+
+        if (atanmisKargoSayisi >= 10) {
+            throw new RuntimeException("Kurye kapasitesi dolu! (Maksimum 10 kargo)");
+        }
 
         kargo.setCourier(kurye);
+
+        kargo.setStatus(com.cargo.logistic_management.entity.ShipmentStatus.IN_TRANSIT);
+
         Shipment guncellenenKargo = shipmentRepository.save(kargo);
 
-        trackingService.createLog(guncellenenKargo, kargo.getStatus(),
-                "Kargo, kurye " + kurye.getFullName() + " üzerine zimmetlendi ve dağıtıma hazırlanıyor.");
+        trackingService.createLog(guncellenenKargo, guncellenenKargo.getStatus(),
+                "Kargo, kurye " + kurye.getFullName() + " üzerine zimmetlendi ve dağıtım süreci başladı.");
 
         return convertToResponseDto(guncellenenKargo);
     }

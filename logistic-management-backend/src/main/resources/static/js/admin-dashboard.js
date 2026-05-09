@@ -500,10 +500,14 @@ document.addEventListener("DOMContentLoaded", () => {
                 method: "PUT"
             });
 
-            if (!response.ok) throw new Error("Kurye ataması başarısız oldu.");
+            if (!response.ok) {
+                const errorMessage = await response.text();
+                throw new Error(errorMessage || "Kurye ataması sırasında bir hata oluştu.");
+            }
 
             showMessage("Kurye başarıyla atandı ve kargo yola çıkmaya hazır!", "success");
             await loadDashboardData();
+
         } catch (error) {
             showMessage(error.message, "error");
         }

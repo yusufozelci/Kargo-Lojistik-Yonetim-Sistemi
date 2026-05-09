@@ -64,9 +64,14 @@ public class UserController {
     public ResponseEntity<String> resetPassword(
             @RequestParam String email,
             @RequestParam String otp,
-            @RequestParam String newPassword) {
-
-        userService.resetPassword(email, otp, newPassword);
-        return ResponseEntity.ok("Şifreniz başarıyla güncellendi. Yeni şifrenizle giriş yapabilirsiniz.");
+            @RequestParam String newPassword,
+            @RequestParam String confirmPassword
+    ) {
+        try {
+            userService.resetPassword(email, otp, newPassword, confirmPassword);
+            return ResponseEntity.ok("Şifreniz başarıyla güncellendi.");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 }

@@ -12,7 +12,6 @@ window.showLoginForm = function() {
 
 let userEmailForReset = "";
 
-
 const forgotPasswordForm = document.getElementById('forgotPasswordForm');
 if (forgotPasswordForm) {
     forgotPasswordForm.addEventListener('submit', async (e) => {
@@ -31,7 +30,6 @@ if (forgotPasswordForm) {
             const resultText = await response.text();
 
             if (!response.ok) throw new Error(resultText || "Bir hata oluştu.");
-
 
             userEmailForReset = email;
             document.getElementById('forgotPasswordForm').classList.add('hidden');
@@ -57,17 +55,29 @@ const resetPasswordForm = document.getElementById('resetPasswordForm');
 if (resetPasswordForm) {
     resetPasswordForm.addEventListener('submit', async (e) => {
         e.preventDefault();
+
         const otp = document.getElementById('resetOtp').value;
         const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value; // 1. Değeri al
         const alertBox = document.getElementById('resetAlert');
 
+        if (newPassword !== confirmPassword) {
+            alertBox.className = "alert alert-error";
+            alertBox.textContent = "Hata: Şifreler uyuşmuyor!";
+            alertBox.classList.remove('hidden');
+            return;
+        }
+
         try {
-            const response = await fetch(`/api/users/reset-password?email=${encodeURIComponent(userEmailForReset)}&otp=${encodeURIComponent(otp)}&newPassword=${encodeURIComponent(newPassword)}`, {
+            const response = await fetch(`/api/users/reset-password?email=${encodeURIComponent(userEmailForReset)}&otp=${encodeURIComponent(otp)}&newPassword=${encodeURIComponent(newPassword)}&confirmPassword=${encodeURIComponent(confirmPassword)}`, {
                 method: 'POST'
             });
+
             const resultText = await response.text();
 
-            if (!response.ok) throw new Error(resultText || "Şifre güncellenemedi.");
+            if (!response.ok) {
+                throw new Error(resultText || "Şifre güncellenemedi.");
+            }
 
             alert("Şifreniz başarıyla güncellendi! Giriş yapabilirsiniz.");
             window.location.href = "/login";
