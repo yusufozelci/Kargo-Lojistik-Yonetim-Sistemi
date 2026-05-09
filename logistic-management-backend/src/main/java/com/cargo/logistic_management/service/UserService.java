@@ -58,7 +58,7 @@ public class UserService {
         user.setEmail(registerDto.getEmail());
         user.setPhone(registerDto.getPhone());
         user.setPasswordHash(passwordEncoder.encode(registerDto.getPassword()));
-        roleRepository.findById(3L).ifPresent(user::setRole);
+        roleRepository.findById(1L).ifPresent(user::setRole);
 
         User savedUser = userRepository.save(user);
         return convertToDto(savedUser);
