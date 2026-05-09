@@ -2,12 +2,16 @@ package com.cargo.logistic_management.service;
 
 import com.cargo.logistic_management.datatransferobject.UserRegisterDto;
 import com.cargo.logistic_management.datatransferobject.UserResponseDto;
+import com.cargo.logistic_management.entity.Customer;
+import com.cargo.logistic_management.repository.CustomerRepository;
 import com.cargo.logistic_management.repository.RoleRepository;
 import com.cargo.logistic_management.entity.User;
 import com.cargo.logistic_management.repository.UserRepository;
 import com.cargo.logistic_management.exception.ResourceNotFoundException;
 import java.time.LocalDateTime;
 import java.util.Random;
+import java.util.stream.Stream;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,6 +27,7 @@ public class UserService {
     private final RoleRepository roleRepository;
     private final PasswordEncoder passwordEncoder;
     private final EmailService emailService;
+    private final CustomerRepository customerRepository;
 
     private UserResponseDto convertToDto(User user) {
         String roleName = user.getRole() != null
@@ -39,10 +44,34 @@ public class UserService {
         );
     }
 
+    private UserResponseDto convertCustomerToDto(Customer customer) {
+        return new UserResponseDto(
+                customer.getId(),
+                customer.getFullName(),
+                null, 
+                customer.getPhone(),
+                "CUSTOMER", 
+                true
+        );
+    }
+
     public List<UserResponseDto> getAllUsers() {
         return userRepository.findAll()
                 .stream()
                 .map(this::convertToDto)
+                .collect(Collectors.toList());
+    }
+
+    public List<UserResponseDto> getAllCustomers() {
+        Stream<UserResponseDto> customersFromUsers = userRepository.findAllByRole_RoleName("CUSTOMER")
+                .stream()
+                .map(this::convertToDto);
+
+        Stream<UserResponseDto> customersFromCustomers = customerRepository.findAll()
+                .stream()
+                .map(this::convertCustomerToDto);
+
+        return Stream.concat(customersFromUsers, customersFromCustomers)
                 .collect(Collectors.toList());
     }
 

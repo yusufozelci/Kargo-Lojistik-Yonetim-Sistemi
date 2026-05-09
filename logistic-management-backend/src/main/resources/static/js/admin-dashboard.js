@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function loadCustomers() {
         try {
-            const response = await fetch("/api/customers");
+            const response = await fetch("/api/users/customers");
 
             if (!response.ok) {
                 throw new Error("Müşteri verileri alınamadı.");
