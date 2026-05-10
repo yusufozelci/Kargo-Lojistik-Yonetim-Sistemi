@@ -20,9 +20,11 @@ jobs:
           distribution: 'temurin'
 
       - name: 3. Maven ile Build Al (.jar üret)
-        run: ./mvnw clean package -DskipTests
+        working-directory: ./logistic-management-backend
+        run: chmod +x mvnw && ./mvnw clean package -DskipTests
 
       - name: 4. Deployment İçin ZIP Oluştur
+        working-directory: ./logistic-management-backend
         run: |
           cp target/*.jar application.jar
           zip deploy.zip application.jar
@@ -32,8 +34,8 @@ jobs:
         with:
           aws_access_key: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws_secret_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          application_name: NovaKargo
-          environment_name: NovaKargo-env
+          application_name: "NovaKargo"
+          environment_name: "NovaKargo-env"
           version_label: "novakargo-deploy-${{ github.run_number }}"
-          region: eu-north-1
-          deployment_package: deploy.zip
+          region: "eu-north-1"
+          deployment_package: logistic-management-backend/deploy.zip
