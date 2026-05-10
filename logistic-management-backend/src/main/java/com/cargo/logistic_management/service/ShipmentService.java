@@ -2,8 +2,10 @@ package com.cargo.logistic_management.service;
 
 import com.cargo.logistic_management.datatransferobject.ShipmentRequestDto;
 import com.cargo.logistic_management.datatransferobject.ShipmentResponseDto;
+import com.cargo.logistic_management.entity.Customer;
 import com.cargo.logistic_management.entity.Shipment;
 import com.cargo.logistic_management.entity.ShipmentStatus;
+import com.cargo.logistic_management.entity.User;
 import com.cargo.logistic_management.exception.ResourceNotFoundException;
 import com.cargo.logistic_management.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -42,11 +44,16 @@ public class ShipmentService {
     public ShipmentResponseDto kargoKaydet(ShipmentRequestDto dto) {
         Shipment shipment = new Shipment();
 
-        shipment.setSender(customerRepository.findById(dto.getSenderId())
-                .orElseThrow(() -> new ResourceNotFoundException("Gönderici bulunamadı! ID: " + dto.getSenderId())));
+        User senderUser = userRepository.findById(dto.getSenderId())
+                .orElseThrow(() -> new ResourceNotFoundException("Gönderici kullanıcı bulunamadı! User ID: " + dto.getSenderId()));
+
+        Customer senderCustomer = customerRepository.findByPhone(senderUser.getPhone())
+                .orElseThrow(() -> new ResourceNotFoundException("Bu kullanıcıya ait müşteri profili bulunamadı! Telefon: " + senderUser.getPhone()));
+
+        shipment.setSender(senderCustomer);
 
         shipment.setReceiver(customerRepository.findById(dto.getReceiverId())
-                .orElseThrow(() -> new ResourceNotFoundException("Alıcı bulunamadı! ID: " + dto.getReceiverId())));
+                .orElseThrow(() -> new ResourceNotFoundException("Alıcı bulunamadı! Customer ID: " + dto.getReceiverId())));
 
         shipment.setOriginAddress(addressRepository.findById(dto.getOriginAddressId())
                 .orElseThrow(() -> new ResourceNotFoundException("Çıkış adresi bulunamadı!")));

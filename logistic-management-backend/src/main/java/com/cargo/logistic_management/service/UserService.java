@@ -15,6 +15,7 @@ import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -81,15 +82,26 @@ public class UserService {
         return convertToDto(user);
     }
 
+    @Transactional
     public UserResponseDto createUser(UserRegisterDto registerDto) {
         User user = new User();
         user.setFullName(registerDto.getFullName());
         user.setEmail(registerDto.getEmail());
         user.setPhone(registerDto.getPhone());
         user.setPasswordHash(passwordEncoder.encode(registerDto.getPassword()));
-        roleRepository.findById(1L).ifPresent(user::setRole);
 
+        roleRepository.findById(1L).ifPresent(user::setRole);
         User savedUser = userRepository.save(user);
+
+        if (savedUser.getRole() != null && "CUSTOMER".equals(savedUser.getRole().getRoleName())) {
+            Customer newCustomer = new Customer();
+            newCustomer.setFullName(savedUser.getFullName());
+            newCustomer.setPhone(savedUser.getPhone());
+            newCustomer.setCustomerType("KAYITLI_KULLANICI");
+
+            customerRepository.save(newCustomer);
+        }
+
         return convertToDto(savedUser);
     }
 
@@ -104,9 +116,6 @@ public class UserService {
                 .orElseThrow(() -> new ResourceNotFoundException(id + " ID'li kullanıcı bulunamadı!"));
 
         userRepository.hardDeleteById(id);
-    }
-
-    public void register(UserRegisterDto userRegisterDto) {
     }
 
     public void generateAndSendOtp(String email) {

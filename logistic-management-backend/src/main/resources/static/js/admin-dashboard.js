@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     async function loadCustomers() {
         try {
-            const response = await fetch("/api/users/customers");
+            const response = await fetch("/api/customers");
 
             if (!response.ok) {
                 throw new Error("Müşteri verileri alınamadı.");
@@ -295,13 +295,15 @@ document.addEventListener("DOMContentLoaded", () => {
             return shipments;
         }
 
-        // DÜZELTME: Arama işleminde nested objeler için güvenlik önlemi eklendi
-        return shipments.filter(shipment =>
-            String(shipment.trackingCode || "").toLowerCase().includes(query) ||
-            String(shipment.sender && shipment.sender.fullName ? shipment.sender.fullName : "").toLowerCase().includes(query) ||
-            String(shipment.receiver && shipment.receiver.fullName ? shipment.receiver.fullName : "").toLowerCase().includes(query) ||
-            String(shipment.status || "").toLowerCase().includes(query)
-        );
+        return shipments.filter(shipment => {
+            let senderStr = shipment.senderName || (shipment.sender ? shipment.sender.fullName : "");
+            let receiverStr = shipment.receiverName || (shipment.receiver ? shipment.receiver.fullName : "");
+
+            return String(shipment.trackingCode || "").toLowerCase().includes(query) ||
+                String(senderStr).toLowerCase().includes(query) ||
+                String(receiverStr).toLowerCase().includes(query) ||
+                String(shipment.status || "").toLowerCase().includes(query);
+        });
     }
 
     function renderStatusBadge(status) {
