@@ -49,7 +49,7 @@
 
                 <div class="input-group">
                     <label for="phone">Telefon</label>
-                    <input type="tel" id="phone" th:field="*{phone}" placeholder="5551234567" required>
+                    <input type="tel" id="phone" th:field="*{phone}" placeholder="5551234567" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')" required>
                     <small class="field-error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}"></small>
                 </div>
 
