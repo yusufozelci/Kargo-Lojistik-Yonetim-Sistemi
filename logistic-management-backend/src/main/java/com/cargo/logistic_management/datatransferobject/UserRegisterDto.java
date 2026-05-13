@@ -21,7 +21,8 @@ public class UserRegisterDto {
     @Email(message = "Lütfen geçerli bir e-posta adresi giriniz.")
     private String email;
 
-    @Pattern(regexp = "^(\\+\\d{1,3}[- ]?)?\\d{10}$", message = "Lütfen geçerli bir telefon numarası giriniz. (Örn: 5551234567)")
+    @NotBlank(message = "Telefon numarası boş bırakılamaz.")
+    @Pattern(regexp = "^\\d{10}$", message = "Lütfen başında sıfır olmadan tam 10 haneli telefon numaranızı giriniz. (Örn: 5551234567)")
     private String phone;
 
     @NotBlank(message = "Şifre alanı boş bırakılamaz.")
